@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { getImage } from "../lib/audioStore.js";
+import { imageUrl } from "../lib/server.js";
 
-// Renders an <img> whose src may be an IndexedDB reference ("idb:<id>").
-// Real paths ("/images/..") and data URLs render directly; idb references are
-// loaded from IndexedDB into a temporary object URL (revoked on change/unmount).
+// Renders an <img> from any of our src forms:
+//   "/images/.." or "data:.."  -> used directly
+//   "srv:<id>"                  -> served from the Netlify backend
+//   "idb:<id>"                  -> loaded from IndexedDB (local) into an object URL
+function normalize(src) {
+  if (typeof src === "string" && src.startsWith("srv:")) return imageUrl(src.slice(4));
+  return src;
+}
+
 export default function ResolvedImg({ src, alt = "", ...rest }) {
   const isIdb = typeof src === "string" && src.startsWith("idb:");
-  const [url, setUrl] = useState(isIdb ? null : src);
+  const [url, setUrl] = useState(isIdb ? null : normalize(src));
 
   useEffect(() => {
     if (!isIdb) {
-      setUrl(src);
+      setUrl(normalize(src));
       return;
     }
     let objectUrl = null;

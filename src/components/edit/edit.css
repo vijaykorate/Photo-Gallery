@@ -63,6 +63,87 @@
   }
 }
 
+/* Owner password gate */
+.pw-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(22, 15, 30, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.pw-gate__box {
+  width: 100%;
+  max-width: 340px;
+  padding: 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.pw-gate__title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--ink);
+}
+.pw-gate__hint {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.pw-gate__input {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg-tint);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.pw-gate__input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.pw-gate__err {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #a33;
+}
+.pw-gate__row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.pw-gate__cancel,
+.pw-gate__go {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.pw-gate__cancel {
+  color: var(--ink-soft);
+  background: var(--bg-tint);
+}
+.pw-gate__go {
+  color: #fff;
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+}
+.pw-gate__go:disabled {
+  opacity: 0.6;
+}
+.pw-gate__local {
+  margin-top: 0.8rem;
+  font-size: 0.76rem;
+  color: var(--ink-faint);
+  text-decoration: underline;
+}
+
 /* Backup / Restore controls (edit mode), bottom-left. */
 .backup-bar {
   position: fixed;

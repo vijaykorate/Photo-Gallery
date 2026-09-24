@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import { useEdit } from "./EditContext.jsx";
 import { resizeToBlob } from "../../lib/resizeImage.js";
-import { putImage } from "../../lib/audioStore.js";
+import { storeImage } from "../../lib/storeImage.js";
 
 // The row of controls shown under a group's heading while editing:
 // switch Trip/Occasion, add photos, reorder, delete.
 export default function GroupEditBar({ group }) {
-  const { updateGroup, removeGroup, moveGroup, addPhotos } = useEdit();
+  const { updateGroup, removeGroup, moveGroup, addPhotos, token } = useEdit();
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
 
@@ -19,10 +19,9 @@ export default function GroupEditBar({ group }) {
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
         const { blob, width, height } = await resizeToBlob(f);
-        const id = `img-${Date.now()}-${i}`;
-        if (blob) await putImage(id, blob); // stored in IndexedDB (roomy, local)
+        const src = blob ? await storeImage(blob, token) : null;
         photos.push({
-          src: blob ? `idb:${id}` : null,
+          src,
           alt: f.name.replace(/\.[^.]+$/, ""),
           ratio: width && height ? `${width}/${height}` : "3/4",
           caption: "",

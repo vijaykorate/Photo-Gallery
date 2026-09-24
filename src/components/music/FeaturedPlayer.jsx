@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import { useMusic } from "./MusicProvider.jsx";
 import { useEdit } from "../edit/EditContext.jsx";
 import { resizeToBlob } from "../../lib/resizeImage.js";
-import { putAudio, deleteAudio, putImage } from "../../lib/audioStore.js";
+import { putAudio, deleteAudio } from "../../lib/audioStore.js";
+import { storeImage } from "../../lib/storeImage.js";
 import ResolvedImg from "../ResolvedImg.jsx";
 import PlayIcon from "./PlayIcon.jsx";
 import "./music.css";
@@ -19,7 +20,7 @@ function fmt(t) {
 // them (add songs, rename, change cover, remove).
 export default function FeaturedPlayer() {
   const music = useMusic();
-  const { content, setMusic, addTrack, updateTrack, removeTrack, editing, setEditing, setUnlocked } = useEdit();
+  const { content, setMusic, addTrack, updateTrack, removeTrack, editing, setEditing, setUnlocked, token } = useEdit();
   const [listOpen, setListOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const taps = useRef([]);
@@ -33,15 +34,15 @@ export default function FeaturedPlayer() {
   const songEdit = editing; // song controls show while editing
   const showList = listOpen || songEdit;
 
-  // Secret: 4 taps on the song track unlocks editing — reveals the Edit button
-  // and turns on edit mode for the whole site (photos, sections, songs, footer).
+  // Secret: 4 taps on the song track unlocks editing. If already signed in this
+  // session, go straight to editing; otherwise the password gate appears.
   const onArtTap = () => {
     const t = Date.now();
     taps.current = [...taps.current, t].filter((x) => t - x < 2000);
     if (taps.current.length >= 4) {
       taps.current = [];
       setUnlocked(true);
-      setEditing(true);
+      if (token) setEditing(true);
       setListOpen(true);
     }
   };
@@ -57,9 +58,8 @@ export default function FeaturedPlayer() {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("image/"));
     if (!file) return;
     const { blob } = await resizeToBlob(file, { maxEdge: 500 });
-    const id = `img-${Date.now()}`;
-    if (blob) await putImage(id, blob);
-    setMusic({ cover: { src: blob ? `idb:${id}` : null } });
+    const src = blob ? await storeImage(blob, token) : null;
+    setMusic({ cover: { src } });
     if (coverInput.current) coverInput.current.value = "";
   };
 

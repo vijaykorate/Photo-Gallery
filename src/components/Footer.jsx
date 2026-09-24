@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useReveal } from "../hooks/useReveal.js";
 import { toneGradient } from "../lib/gradient.js";
 import { resizeToBlob } from "../lib/resizeImage.js";
-import { putImage } from "../lib/audioStore.js";
+import { storeImage } from "../lib/storeImage.js";
 import ResolvedImg from "./ResolvedImg.jsx";
 import { useEdit } from "./edit/EditContext.jsx";
 import EditableText from "./edit/EditableText.jsx";
@@ -10,7 +10,7 @@ import "./Footer.css";
 
 // The closing section: a full-width photo with a short, personal message.
 export default function Footer() {
-  const { content, setClosing, editing } = useEdit();
+  const { content, setClosing, editing, token } = useEdit();
   const [ref, visible] = useReveal({ threshold: 0.3 });
   const closing = content.closing;
   const photo = closing.photo || {};
@@ -25,9 +25,8 @@ export default function Footer() {
     setBusy(true);
     try {
       const { blob } = await resizeToBlob(file, { maxEdge: 2000 });
-      const id = `img-${Date.now()}`;
-      if (blob) await putImage(id, blob);
-      setClosing({ photo: { ...photo, src: blob ? `idb:${id}` : null, alt: closing.photo?.alt || "" } });
+      const src = blob ? await storeImage(blob, token) : null;
+      setClosing({ photo: { ...photo, src, alt: closing.photo?.alt || "" } });
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";

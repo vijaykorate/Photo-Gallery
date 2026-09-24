@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { site } from "../data/site.js";
 import { toneGradient } from "../lib/gradient.js";
 import { resizeToBlob } from "../lib/resizeImage.js";
-import { putImage } from "../lib/audioStore.js";
+import { storeImage } from "../lib/storeImage.js";
 import ResolvedImg from "./ResolvedImg.jsx";
 import { useEdit } from "./edit/EditContext.jsx";
 import EditableText from "./edit/EditableText.jsx";
@@ -12,7 +12,7 @@ import "./Hero.css";
 // The opening section: the owner's featured photo with a minimal introduction
 // and the music player sitting right over the home photo.
 export default function Hero() {
-  const { content, setHero, setIntro, editing } = useEdit();
+  const { content, setHero, setIntro, editing, token } = useEdit();
   const { scrollHint } = site.hero;
   const hero = content.hero;
   const photo = hero.photo || {};
@@ -27,9 +27,8 @@ export default function Hero() {
     setBusy(true);
     try {
       const { blob } = await resizeToBlob(file, { maxEdge: 2000 });
-      const id = `img-${Date.now()}`;
-      if (blob) await putImage(id, blob);
-      setHero({ photo: { src: blob ? `idb:${id}` : null, alt: hero.photo?.alt || "A favorite memory" } });
+      const src = blob ? await storeImage(blob, token) : null;
+      setHero({ photo: { src, alt: hero.photo?.alt || "A favorite memory" } });
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";

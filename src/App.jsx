@@ -12,6 +12,7 @@ import Footer from "./components/Footer.jsx";
 import EditToggle from "./components/edit/EditToggle.jsx";
 import AddGroup from "./components/edit/AddGroup.jsx";
 import BackupControls from "./components/edit/BackupControls.jsx";
+import PasswordGate from "./components/edit/PasswordGate.jsx";
 
 import { MusicProvider } from "./components/music/MusicProvider.jsx";
 
@@ -65,6 +66,7 @@ function AppInner() {
 
       {features.edit ? <EditToggle /> : null}
       {features.edit ? <BackupControls /> : null}
+      {features.edit ? <PasswordGate /> : null}
     </>
   );
 

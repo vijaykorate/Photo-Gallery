@@ -205,6 +205,18 @@ export function useContent() {
     [commit]
   );
 
+  // Replace the whole content (e.g. applying content loaded from the server).
+  const replaceContent = useCallback((next) => {
+    if (!next || !Array.isArray(next.groups)) return;
+    setContent(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setStorageError(false);
+    } catch {
+      setStorageError(true);
+    }
+  }, []);
+
   const resetAll = useCallback(() => {
     const fresh = clone(defaultContent);
     try {
@@ -225,6 +237,7 @@ export function useContent() {
     content,
     flatPhotos,
     storageError,
+    replaceContent,
     setHero,
     setClosing,
     setMusic,

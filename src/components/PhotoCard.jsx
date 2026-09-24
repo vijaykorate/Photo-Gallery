@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useReveal } from "../hooks/useReveal.js";
 import { toneGradient } from "../lib/gradient.js";
 import { resizeToBlob } from "../lib/resizeImage.js";
-import { putImage } from "../lib/audioStore.js";
+import { storeImage } from "../lib/storeImage.js";
 import ResolvedImg from "./ResolvedImg.jsx";
 import { useEdit } from "./edit/EditContext.jsx";
 import "./PhotoCard.css";
@@ -22,10 +22,9 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("image/"));
     if (!file) return;
     const { blob, width, height } = await resizeToBlob(file);
-    const id = `img-${Date.now()}`;
-    if (blob) await putImage(id, blob);
+    const src = blob ? await storeImage(blob, edit.token) : photo.src;
     edit.updatePhoto(groupId, photo.id, {
-      src: blob ? `idb:${id}` : photo.src,
+      src,
       ratio: width && height ? `${width}/${height}` : photo.ratio,
     });
     if (replaceInput.current) replaceInput.current.value = "";
@@ -134,8 +133,8 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
           {media}
         </button>
       </div>
-      {photo.caption ? (
-        <figcaption className="photo-card__caption-below">{photo.caption}</figcaption>
+      {(photo.caption || photo.alt) ? (
+        <figcaption className="photo-card__caption-below">{photo.caption || photo.alt}</figcaption>
       ) : null}
     </figure>
   );

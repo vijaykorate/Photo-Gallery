@@ -96,6 +96,29 @@ src/
 - **Lightbox slideshow** — open any photo and press **Slideshow** to auto-advance
   through all your photos (press **Pause** to stop). Captions show under each photo.
 
+## Editing the live site (owner password + auto server-sync)
+
+Edits made on the **deployed** site can save to a small backend (Netlify Functions +
+Netlify Blobs) so the live site updates for **every device/visitor** automatically.
+
+**One-time setup on Netlify:**
+1. In the Netlify dashboard → Site settings → Environment variables, add
+   **`EDIT_PASSWORD`** = a password of your choice.
+2. Redeploy (or it applies on the next deploy).
+
+**How it works:**
+- Unlock editing by tapping the **song track 4 times**, then enter your password.
+- Your edits (text, emojis, photos) **auto-save to the server** (debounced) and load on
+  any device. Visitors without the password can only view.
+- **Songs stay local** to each device (not uploaded — avoids large/copyright audio on a
+  public server). Add songs per device in Edit mode.
+- Photos you upload while signed in are stored on the server (`srv:` refs); offline/local
+  edits fall back to your browser (IndexedDB) and the "Edit on this device only" option.
+
+**Local development:** run `npx netlify dev` (serves Vite + Functions + Blobs on
+`http://localhost:8888`). Plain `npm run dev` still works but without server sync (falls
+back to local-only editing).
+
 ## Fonts
 
 Self-hosted (offline) via `@fontsource`: **Fraunces Variable** (display serif) +
