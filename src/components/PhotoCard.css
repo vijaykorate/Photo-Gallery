@@ -32,6 +32,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(var(--zoom, 1));
   transition: transform 0.7s var(--ease);
 }
 .photo-card__placeholder {
@@ -75,7 +76,7 @@
   }
   .photo-card:not(.is-editing):hover .photo-card__img,
   .photo-card:not(.is-editing):hover .photo-card__placeholder {
-    transform: scale(1.06);
+    transform: scale(calc(var(--zoom, 1) * 1.06));
   }
   .photo-card__button::after {
     opacity: 0;
@@ -168,4 +169,28 @@
 .photo-card__caption-input:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+/* Per-photo adjust row (fit toggle + zoom slider). */
+.photo-card__adjust {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.photo-card__fit {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  background: var(--bg-tint);
+}
+.photo-card__fit:hover {
+  background: var(--line);
+}
+.photo-card__zoom {
+  flex: 1 1 auto;
+  accent-color: var(--accent);
+  cursor: pointer;
 }

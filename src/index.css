@@ -17,11 +17,13 @@
   --accent-soft: #b79bd6;   /* light purple (gradient highlight) */
 
   /* ---- Typography ---- */
-  /* Soft serif for display. No web-font download — swap here for a custom font
-     (see README) and it updates everywhere. */
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
-    Georgia, "Times New Roman", serif;
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Fraunces = soft, elegant display serif (with optical sizing); Inter = clean
+     body sans. Both are self-hosted (offline) via @fontsource in src/main.jsx.
+     System fonts are kept as graceful fallbacks. */
+  --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype",
+    Palatino, Georgia, serif;
+  --font-body: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
 
   /* ---- Spacing scale ---- */
   --space-1: 0.5rem;
@@ -75,7 +77,8 @@ body {
   font-family: var(--font-body);
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   line-height: 1.6;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* Guard against any accidental horizontal scroll on small screens. */
@@ -100,9 +103,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-weight: 460;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-optical-sizing: auto;
 }
 
 /* ---- Shared helpers ---- */

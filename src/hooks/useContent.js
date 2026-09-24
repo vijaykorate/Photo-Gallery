@@ -23,10 +23,12 @@ function readContent() {
     const parsed = JSON.parse(raw);
     // Basic shape guard — fall back to defaults if it looks wrong.
     if (!parsed || !Array.isArray(parsed.groups) || !parsed.hero) return clone(defaultContent);
-    // Forward-compat: make sure the music block (added later) exists.
+    // Forward-compat: make sure newer blocks/fields exist.
     if (!parsed.music) parsed.music = clone(defaultContent.music);
     if (!Array.isArray(parsed.music.tracks)) parsed.music.tracks = clone(defaultContent.music.tracks);
     if (!("cover" in parsed.music)) parsed.music.cover = null;
+    if (!parsed.intro) parsed.intro = clone(defaultContent.intro);
+    if (!("eyebrow" in parsed.hero)) parsed.hero.eyebrow = defaultContent.hero.eyebrow;
     return parsed;
   } catch {
     return clone(defaultContent);
@@ -68,6 +70,7 @@ export function useContent() {
   const setHero = useCallback((patch) => commit((c) => Object.assign(c.hero, patch)), [commit]);
   const setClosing = useCallback((patch) => commit((c) => Object.assign(c.closing, patch)), [commit]);
   const setMusic = useCallback((patch) => commit((c) => Object.assign(c.music, patch)), [commit]);
+  const setIntro = useCallback((patch) => commit((c) => Object.assign(c.intro, patch)), [commit]);
 
   const addTrack = useCallback(
     (meta) => commit((c) => c.music.tracks.push({ id: uid("t"), kind: "file", title: "New song", artist: "", ...meta })),
@@ -182,6 +185,7 @@ export function useContent() {
     setHero,
     setClosing,
     setMusic,
+    setIntro,
     addTrack,
     updateTrack,
     removeTrack,

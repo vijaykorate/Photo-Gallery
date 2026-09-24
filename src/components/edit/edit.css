@@ -153,6 +153,20 @@
 }
 
 /* ---- Hero / closing "change photo" buttons ---- */
+.hero__edit-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+.hero__edit-actions .change-photo {
+  position: static;
+}
+
 .change-photo {
   position: absolute;
   top: 1rem;

@@ -1,11 +1,12 @@
 import { useReveal } from "../hooks/useReveal.js";
 import { useEdit } from "./edit/EditContext.jsx";
+import EditableText from "./edit/EditableText.jsx";
 import "./Timeline.css";
 
-// A visual trip timeline, built automatically from your "trip" sections
-// (edit the trips in the gallery and this updates itself). Toggle it off via
-// features.timeline in src/data/site.js.
-function TimelineItem({ item }) {
+// A visual trip timeline, built automatically from your "trip" sections.
+// The trip name + note are editable here too (they're the same fields as the
+// trip section, so editing either place keeps both in sync).
+function TimelineItem({ item, editing, updateGroup }) {
   const [ref, visible] = useReveal({ threshold: 0.3 });
   return (
     <li ref={ref} className={`tl__item reveal ${visible ? "is-visible" : ""}`}>
@@ -16,15 +17,33 @@ function TimelineItem({ item }) {
         </span>
       ) : null}
       <span className="tl__text">
-        <span className="tl__trip">{item.trip}</span>
-        {item.place ? <span className="tl__place">{item.place}</span> : null}
+        <span className="tl__trip">
+          <EditableText
+            editing={editing}
+            value={item.trip}
+            onChange={(v) => updateGroup(item.id, { title: v })}
+            placeholder="Trip name"
+            ariaLabel="Trip name"
+          />
+        </span>
+        {(item.place || editing) && (
+          <span className="tl__place">
+            <EditableText
+              editing={editing}
+              value={item.place}
+              onChange={(v) => updateGroup(item.id, { note: v })}
+              placeholder="a short note"
+              ariaLabel="Trip note"
+            />
+          </span>
+        )}
       </span>
     </li>
   );
 }
 
 export default function Timeline() {
-  const { content } = useEdit();
+  const { content, editing, updateGroup } = useEdit();
 
   const trips = content.groups
     .filter((g) => g.kind === "trip")
@@ -42,7 +61,7 @@ export default function Timeline() {
       <div className="container">
         <ol className="tl__list">
           {trips.map((item) => (
-            <TimelineItem key={item.id} item={item} />
+            <TimelineItem key={item.id} item={item} editing={editing} updateGroup={updateGroup} />
           ))}
         </ol>
       </div>

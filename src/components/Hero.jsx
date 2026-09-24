@@ -10,8 +10,8 @@ import "./Hero.css";
 // The opening section: the owner's featured photo with a minimal introduction
 // and the music player sitting right over the home photo.
 export default function Hero() {
-  const { content, setHero, editing } = useEdit();
-  const { eyebrow, scrollHint } = site.hero;
+  const { content, setHero, setIntro, editing } = useEdit();
+  const { scrollHint } = site.hero;
   const hero = content.hero;
   const photo = hero.photo || {};
   const hasImage = Boolean(photo.src);
@@ -52,18 +52,51 @@ export default function Hero() {
       </div>
 
       {editing ? (
-        <label className={`change-photo ${busy ? "is-busy" : ""}`}>
-          <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => changePhoto(e.target.files)} />
-          {busy ? "Uploading…" : "Change hero photo"}
-        </label>
+        <div className="hero__edit-actions">
+          <label className={`change-photo ${busy ? "is-busy" : ""}`}>
+            <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => changePhoto(e.target.files)} />
+            {busy ? "Uploading…" : "Change hero photo"}
+          </label>
+        </div>
+      ) : null}
+
+      {editing ? (
+        <div className="hero__intro-edit">
+          <p className="hero__intro-edit-title">Opening screen</p>
+          <label className="hero__intro-field">
+            <span>Small line</span>
+            <input
+              type="text"
+              value={content.intro.eyebrow || ""}
+              placeholder="a little place for us"
+              onChange={(e) => setIntro({ eyebrow: e.target.value })}
+            />
+          </label>
+          <label className="hero__intro-field">
+            <span>Button text</span>
+            <input
+              type="text"
+              value={content.intro.button || ""}
+              placeholder="Open"
+              onChange={(e) => setIntro({ button: e.target.value })}
+            />
+          </label>
+          <p className="hero__intro-note">The big word uses your title above.</p>
+        </div>
       ) : null}
 
       <div className="hero__content container">
-        {eyebrow ? (
+        {(content.hero.eyebrow || editing) && (
           <p className="eyebrow hero__eyebrow hero__enter" style={{ "--d": "0.05s" }}>
-            {eyebrow}
+            <EditableText
+              editing={editing}
+              value={content.hero.eyebrow}
+              onChange={(v) => setHero({ eyebrow: v })}
+              placeholder="a small line"
+              ariaLabel="Hero eyebrow"
+            />
           </p>
-        ) : null}
+        )}
 
         <h1 className="hero__title hero__enter" style={{ "--d": "0.15s" }}>
           <EditableText

@@ -29,7 +29,13 @@ const defaultTracks = playlist.map((t, i) => ({
 }));
 
 export const defaultContent = {
+  // The opening "Open" screen.
+  intro: {
+    eyebrow: "a little place for us",
+    button: "Open",
+  },
   hero: {
+    eyebrow: "welcome",
     title: "Our Memories",
     tagline: "A little place for our memories.",
     photo: { src: "/images/photo-hero.jpg", alt: "A favorite memory" },

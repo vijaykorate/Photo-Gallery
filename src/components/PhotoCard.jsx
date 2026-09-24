@@ -39,6 +39,7 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
       decoding="async"
       draggable="false"
       onError={() => setFailed(true)}
+      style={{ objectFit: photo.fit || "cover", "--zoom": photo.zoom || 1 }}
     />
   ) : (
     <span
@@ -81,6 +82,29 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
           aria-label="Photo name"
           onChange={(e) => edit.updatePhoto(groupId, photo.id, { caption: e.target.value })}
         />
+        <div className="photo-card__adjust">
+          <button
+            type="button"
+            className="photo-card__fit"
+            onClick={() =>
+              edit.updatePhoto(groupId, photo.id, {
+                fit: (photo.fit || "cover") === "cover" ? "contain" : "cover",
+              })
+            }
+          >
+            {(photo.fit || "cover") === "cover" ? "Fill" : "Fit"}
+          </button>
+          <input
+            type="range"
+            className="photo-card__zoom"
+            min="1"
+            max="2.5"
+            step="0.05"
+            value={photo.zoom || 1}
+            aria-label="Zoom"
+            onChange={(e) => edit.updatePhoto(groupId, photo.id, { zoom: Number(e.target.value) })}
+          />
+        </div>
       </figure>
     );
   }

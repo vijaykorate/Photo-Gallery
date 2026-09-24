@@ -44,16 +44,39 @@ export default function Footer() {
             loading="lazy"
             decoding="async"
             draggable="false"
+            style={{ transform: `scale(${photo.zoom || 1})`, objectPosition: `50% ${photo.posY ?? 50}%` }}
           />
         ) : null}
         <div className="closing__scrim" aria-hidden="true" />
       </div>
 
       {editing ? (
-        <label className={`change-photo ${busy ? "is-busy" : ""}`}>
-          <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => changePhoto(e.target.files)} />
-          {busy ? "Uploading…" : "Change photo"}
-        </label>
+        <div className="closing__edit">
+          <label className={`change-photo ${busy ? "is-busy" : ""}`}>
+            <input ref={inputRef} type="file" accept="image/*" hidden onChange={(e) => changePhoto(e.target.files)} />
+            {busy ? "Uploading…" : "Change photo"}
+          </label>
+          <div className="closing__adjust">
+            <label className="closing__slider">
+              <span>Zoom</span>
+              <input
+                type="range" min="1" max="2.5" step="0.05"
+                value={photo.zoom || 1}
+                aria-label="Photo zoom"
+                onChange={(e) => setClosing({ photo: { ...photo, zoom: Number(e.target.value) } })}
+              />
+            </label>
+            <label className="closing__slider">
+              <span>Position</span>
+              <input
+                type="range" min="0" max="100" step="1"
+                value={photo.posY ?? 50}
+                aria-label="Photo vertical position"
+                onChange={(e) => setClosing({ photo: { ...photo, posY: Number(e.target.value) } })}
+              />
+            </label>
+          </div>
+        </div>
       ) : null}
 
       <div

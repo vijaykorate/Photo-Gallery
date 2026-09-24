@@ -96,6 +96,18 @@ src/
 - **Lightbox slideshow** — open any photo and press **Slideshow** to auto-advance
   through all your photos (press **Pause** to stop). Captions show under each photo.
 
+## Fonts
+
+Self-hosted (offline) via `@fontsource`: **Fraunces Variable** (display serif) +
+**Inter Variable** (body), imported in `src/main.jsx`. To change them, swap those two
+imports and update `--font-display` / `--font-body` in `src/index.css`.
+
+## Photos: zoom & fit
+
+In Edit mode, under each photo there's a **Fill/Fit** toggle and a **zoom slider** —
+nudge a photo's zoom or switch between filling the tile (cropped) and fitting the whole
+image in. The timeline trip names/notes are editable too (they mirror the trip sections).
+
 ## Change the colors
 
 Open **`src/index.css`** and edit the tokens under `:root`. The three purple lines

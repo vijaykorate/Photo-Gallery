@@ -49,6 +49,55 @@
   );
 }
 
+/* "Opening screen" text editor (edit mode only), top-left of the hero. */
+.hero__intro-edit {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 4;
+  width: min(230px, 62vw);
+  text-align: left;
+  padding: 0.7rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+.hero__intro-edit-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.hero__intro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 0.5rem;
+}
+.hero__intro-field span {
+  font-size: 0.64rem;
+  color: var(--ink-soft);
+}
+.hero__intro-field input {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--bg-tint);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.hero__intro-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.hero__intro-note {
+  font-size: 0.6rem;
+  color: var(--ink-faint);
+}
+
 /* The music player, sitting over the lower part of the home photo. */
 .hero__player {
   position: relative;

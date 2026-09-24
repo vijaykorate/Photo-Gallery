@@ -6,6 +6,7 @@ const KEY = "photo-gallery/intro-seen";
 
 // A soft opening screen that gently gives way to the site — makes it feel like
 // a little surprise rather than just a page. Shows once per visit (per tab).
+// Its text is edited from the hero's "Opening screen" panel in Edit mode.
 export default function Intro() {
   const { content, editing } = useEdit();
   const [open, setOpen] = useState(() => {
@@ -43,14 +44,16 @@ export default function Intro() {
   // Never block the owner while they're editing.
   if (!open || editing) return null;
 
+  const intro = content.intro;
+
   return (
     <div className={`intro ${leaving ? "is-leaving" : ""}`} role="dialog" aria-modal="true" aria-label="Welcome">
       <div className="intro__glow" aria-hidden="true" />
       <div className="intro__inner">
-        <p className="intro__eyebrow">a little place for us</p>
+        {intro.eyebrow ? <p className="intro__eyebrow">{intro.eyebrow}</p> : null}
         <h1 className="intro__title">{content.hero.title}</h1>
         <button type="button" className="intro__open" onClick={close} autoFocus>
-          Open
+          {intro.button || "Open"}
         </button>
       </div>
     </div>
