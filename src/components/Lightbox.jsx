@@ -13,6 +13,7 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
   const closeRef = useRef(null);
   const touchStart = useRef(null);
   const [anim, setAnim] = useState(""); // "next" | "prev" for the slide direction
+  const [slideshow, setSlideshow] = useState(false);
 
   const count = photos.length;
   const photo = open ? photos[index] : null;
@@ -28,6 +29,17 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
     setAnim("prev");
     onChange((index - 1 + count) % count);
   }, [count, index, onChange]);
+
+  // Slideshow: auto-advance while playing. Stops when closed.
+  useEffect(() => {
+    if (!open || !slideshow || count < 2) return;
+    const id = setInterval(goNext, 3800);
+    return () => clearInterval(id);
+  }, [open, slideshow, count, goNext]);
+
+  useEffect(() => {
+    if (!open) setSlideshow(false);
+  }, [open]);
 
   // Keyboard navigation + focus trap.
   useEffect(() => {
@@ -179,8 +191,27 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
       ) : null}
 
       {count > 1 ? (
-        <div className="lightbox__counter" aria-hidden="true">
-          {index + 1} / {count}
+        <div className="lightbox__bottom">
+          <button
+            type="button"
+            className={`lightbox__slideshow ${slideshow ? "is-on" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSlideshow((v) => !v);
+            }}
+            aria-pressed={slideshow}
+            aria-label={slideshow ? "Pause slideshow" : "Play slideshow"}
+          >
+            {slideshow ? (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" /><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10-6.5a1 1 0 0 0 0-1.7l-10-6.5A1 1 0 0 0 8 5.5z" fill="currentColor" /></svg>
+            )}
+            <span>{slideshow ? "Pause" : "Slideshow"}</span>
+          </button>
+          <span className="lightbox__counter" aria-hidden="true">
+            {index + 1} / {count}
+          </span>
         </div>
       ) : null}
     </div>

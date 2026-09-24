@@ -4,7 +4,10 @@ import "./edit.css";
 // The single, always-visible control: a pencil to start editing, a check to
 // finish. No top toolbar, no separate "Done" button.
 export default function EditToggle() {
-  const { editing, setEditing } = useEdit();
+  const { editing, setEditing, unlocked } = useEdit();
+
+  // Hidden until unlocked (tap the song track 4 times).
+  if (!unlocked) return null;
 
   return (
     <button

@@ -127,14 +127,43 @@
   grid-column: 3;
 }
 
-.lightbox__counter {
+.lightbox__bottom {
   position: absolute;
   left: 50%;
   bottom: max(env(safe-area-inset-bottom), 1rem);
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 2;
+}
+.lightbox__counter {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.74rem;
   letter-spacing: 0.24em;
+  white-space: nowrap;
+}
+.lightbox__slideshow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 0.25s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.lightbox__slideshow:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.lightbox__slideshow.is-on {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 @keyframes lb-pop {
@@ -200,7 +229,9 @@
     justify-self: end;
     margin-right: 1.4rem;
   }
-  .lightbox__counter {
+  /* On phones the nav arrows live at the bottom, so move the slideshow +
+     counter row up to the top so nothing overlaps. */
+  .lightbox__bottom {
     bottom: auto;
     top: max(env(safe-area-inset-top), 1rem);
     left: 1.2rem;

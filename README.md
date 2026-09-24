@@ -88,6 +88,14 @@ src/
 
 ---
 
+## Premium touches (toggle in `src/data/site.js` → `features`)
+
+- **`intro`** — an elegant "Open" welcome screen that gently gives way to the site
+  (shows once per visit). Set to `false` to skip it.
+- **`scrollProgress`** — a thin purple bar along the top showing how far you've scrolled.
+- **Lightbox slideshow** — open any photo and press **Slideshow** to auto-advance
+  through all your photos (press **Pause** to stop). Captions show under each photo.
+
 ## Change the colors
 
 Open **`src/index.css`** and edit the tokens under `:root`. The three purple lines

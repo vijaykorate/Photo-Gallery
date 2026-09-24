@@ -18,9 +18,8 @@ function fmt(t) {
 // them (add songs, rename, change cover, remove).
 export default function FeaturedPlayer() {
   const music = useMusic();
-  const { content, setMusic, addTrack, updateTrack, removeTrack } = useEdit();
+  const { content, setMusic, addTrack, updateTrack, removeTrack, editing, setEditing, setUnlocked } = useEdit();
   const [listOpen, setListOpen] = useState(false);
-  const [songEdit, setSongEdit] = useState(false);
   const [busy, setBusy] = useState(false);
   const taps = useRef([]);
   const barRef = useRef(null);
@@ -30,15 +29,18 @@ export default function FeaturedPlayer() {
   if (!music) return null;
   const { playlist, track, now, count, isPlaying, progress, current, duration, toggle, next, prev, select } = music;
   const cover = content.music.cover;
+  const songEdit = editing; // song controls show while editing
   const showList = listOpen || songEdit;
 
-  // Secret: 4 taps on the album art reveals the song-editing controls.
+  // Secret: 4 taps on the song track unlocks editing — reveals the Edit button
+  // and turns on edit mode for the whole site (photos, sections, songs, footer).
   const onArtTap = () => {
     const t = Date.now();
     taps.current = [...taps.current, t].filter((x) => t - x < 2000);
     if (taps.current.length >= 4) {
       taps.current = [];
-      setSongEdit(true);
+      setUnlocked(true);
+      setEditing(true);
       setListOpen(true);
     }
   };
@@ -83,26 +85,28 @@ export default function FeaturedPlayer() {
   return (
     <div className="fplayer">
       <div className="fplayer__row">
-        <button
-          type="button"
-          className={`fplayer__art ${isPlaying ? "is-spinning" : ""}`}
-          onClick={onArtTap}
-          aria-label="Album art"
-          title="Tap 4 times to edit songs"
-        >
-          {cover?.src ? <img src={cover.src} alt="" /> : <span className="fplayer__art-dot" />}
-        </button>
+        {/* The album art + title form the secret "tap 4× to edit songs" area. */}
+        <div className="fplayer__tap" onClick={onArtTap} title="Tap 4 times to edit songs">
+          <span className={`fplayer__art ${isPlaying ? "is-spinning" : ""}`} aria-hidden="true">
+            {cover?.src ? <img src={cover.src} alt="" /> : <span className="fplayer__art-dot" />}
+          </span>
 
-        <div className="fplayer__mid">
-          <p className="fplayer__title">
-            {now.title || "No songs yet"}
-            {now.artist ? <span className="fplayer__artist"> · {now.artist}</span> : null}
-          </p>
-          <div className="fplayer__progress">
-            <div className="fplayer__bar" ref={barRef} onClick={onScrub} role="presentation">
-              <span className="fplayer__bar-fill" style={{ width: `${progress * 100}%` }} />
+          <div className="fplayer__mid">
+            <p className="fplayer__title">
+              {now.title || "No songs yet"}
+              {now.artist ? <span className="fplayer__artist"> · {now.artist}</span> : null}
+            </p>
+            <div className="fplayer__progress">
+              <div
+                className="fplayer__bar"
+                ref={barRef}
+                onClick={(e) => { e.stopPropagation(); onScrub(e); }}
+                role="presentation"
+              >
+                <span className="fplayer__bar-fill" style={{ width: `${progress * 100}%` }} />
+              </div>
+              <span className="fplayer__t">{fmt(current)} / {fmt(duration)}</span>
             </div>
-            <span className="fplayer__t">{fmt(current)} / {fmt(duration)}</span>
           </div>
         </div>
 
@@ -132,7 +136,7 @@ export default function FeaturedPlayer() {
             <input ref={songInput} type="file" accept="audio/*" multiple hidden onChange={(e) => addSongs(e.target.files)} />
             {busy ? "Adding…" : "＋ Add songs"}
           </label>
-          <button type="button" className="fplayer__ebtn" onClick={() => setSongEdit(false)}>Done</button>
+          <button type="button" className="fplayer__ebtn" onClick={() => setEditing(false)}>Done</button>
         </div>
       ) : null}
 

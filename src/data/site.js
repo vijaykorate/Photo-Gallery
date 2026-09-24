@@ -15,6 +15,12 @@ export const site = {
 
   // ---- Feature switches: flip any to false to remove that feature ----------
   features: {
+    // Elegant opening screen ("open" to enter). Shows once per visit.
+    intro: true,
+
+    // Thin scroll-progress bar along the very top of the page.
+    scrollProgress: true,
+
     // Background music player (a full playlist). Never autoplays.
     // The songs live in src/data/playlist.js.
     music: {

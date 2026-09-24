@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { site } from "./data/site.js";
 import { EditProvider, useEdit } from "./components/edit/EditContext.jsx";
 
+import Intro from "./components/Intro.jsx";
+import ScrollProgress from "./components/ScrollProgress.jsx";
 import Hero from "./components/Hero.jsx";
 import Section from "./components/Section.jsx";
 import Timeline from "./components/Timeline.jsx";
@@ -36,6 +38,9 @@ function AppInner() {
 
   const tree = (
     <>
+      {features.intro ? <Intro /> : null}
+      {features.scrollProgress ? <ScrollProgress /> : null}
+
       <Hero />
 
       <main>

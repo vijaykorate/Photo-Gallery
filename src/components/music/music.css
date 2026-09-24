@@ -19,7 +19,18 @@
 .fplayer__row {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+/* The tappable "song track" area (album art + title) — 4 taps reveal editing. */
+.fplayer__tap {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
   gap: 0.6rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Album art — also the secret "tap 4× to edit" trigger. */

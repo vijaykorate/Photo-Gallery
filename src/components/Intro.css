@@ -1,0 +1,113 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(1000px 600px at 50% 30%, #efe6fb 0%, rgba(239, 230, 251, 0) 60%),
+    linear-gradient(160deg, #ede3f8 0%, #d9c6ef 55%, #c3a9e2 100%);
+  animation: intro-fade-in 0.9s var(--ease) both;
+}
+
+.intro.is-leaving {
+  animation: intro-leave 0.75s var(--ease) forwards;
+}
+
+/* a slow drifting glow behind the text */
+.intro__glow {
+  position: absolute;
+  width: 70vmin;
+  height: 70vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 83, 184, 0.35), transparent 70%);
+  filter: blur(20px);
+  animation: intro-drift 9s ease-in-out infinite alternate;
+}
+
+.intro__inner {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+  animation: intro-rise 1.1s var(--ease) both;
+  animation-delay: 0.15s;
+}
+
+.intro__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  margin-bottom: 1.2rem;
+}
+
+.intro__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 1.8rem + 6vw, 5.5rem);
+  color: var(--ink);
+  line-height: 1.05;
+  margin-bottom: 2.2rem;
+}
+
+.intro__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2.6rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+  box-shadow: 0 14px 40px rgba(95, 59, 152, 0.4);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  animation: intro-pulse 2.6s ease-in-out infinite;
+}
+.intro__open:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(95, 59, 152, 0.5);
+}
+.intro__open:active {
+  transform: scale(0.96);
+}
+
+@keyframes intro-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes intro-leave {
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+    visibility: hidden;
+  }
+}
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes intro-drift {
+  from { transform: translate(-12%, -8%) scale(1); }
+  to { transform: translate(12%, 10%) scale(1.15); }
+}
+@keyframes intro-pulse {
+  0%, 100% { box-shadow: 0 14px 40px rgba(95, 59, 152, 0.4); }
+  50% { box-shadow: 0 14px 46px rgba(95, 59, 152, 0.62); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .intro__inner,
+  .intro__glow,
+  .intro__open {
+    animation: none;
+  }
+  .intro.is-leaving {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+  }
+}

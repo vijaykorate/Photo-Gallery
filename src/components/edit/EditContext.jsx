@@ -13,8 +13,11 @@ export function useEdit() {
 export function EditProvider({ children }) {
   const store = useContent();
   const [editing, setEditing] = useState(false);
+  // The Edit button stays hidden until the owner "unlocks" it with the secret
+  // 4-tap on the song track — so visitors never see any edit affordance.
+  const [unlocked, setUnlocked] = useState(false);
   return (
-    <EditContext.Provider value={{ ...store, editing, setEditing }}>
+    <EditContext.Provider value={{ ...store, editing, setEditing, unlocked, setUnlocked }}>
       {children}
     </EditContext.Provider>
   );
