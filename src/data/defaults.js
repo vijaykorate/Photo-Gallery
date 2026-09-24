@@ -4,21 +4,11 @@
 //   "Reset" in Edit mode restores back to it. Edit on-screen to change things.)
 // ============================================================================
 
-import { playlist } from "./playlist.js";
-
-const defaultTracks = playlist.map((t, i) => ({
-  id: `builtin-${i + 1}`,
-  title: t.title,
-  artist: t.artist,
-  kind: "builtin",
-  src: t.src,
-}));
-
 export const defaultContent = {
   intro: { eyebrow: "a little place for us", button: "Open" },
   hero: {
     eyebrow: "welcome",
-    title: "",
+    title: "Our Memories",
     tagline: "A little place for our memories.",
     photo: { src: "/images/mem-hero.jpg", alt: "A favorite memory" },
   },
@@ -27,7 +17,8 @@ export const defaultContent = {
     signature: "— for you",
     photo: { src: "/images/photo-closing.jpg", alt: "One more to remember" },
   },
-  music: { cover: null, tracks: defaultTracks },
+  // No default songs — add your own in Edit mode (stored locally in your browser).
+  music: { cover: null, tracks: [] },
   groups: [
   {
     id: "g-first-trip",

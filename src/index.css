@@ -21,9 +21,9 @@
      body sans. Both are self-hosted (offline) via @fontsource in src/main.jsx.
      System fonts are kept as graceful fallbacks. */
   --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype",
-    Palatino, Georgia, serif;
+    Palatino, Georgia, serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
   --font-body: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
 
   /* ---- Spacing scale ---- */
   --space-1: 0.5rem;

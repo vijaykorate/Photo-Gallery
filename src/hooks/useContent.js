@@ -76,7 +76,9 @@ export function useContent() {
     migrated.current = true;
     (async () => {
       const src0 = JSON.stringify(content);
-      if (!src0.includes("data:image")) return; // nothing to migrate
+      const hasDataUrls = src0.includes("data:image");
+      const hasDummyTracks = (content.music?.tracks || []).some((t) => t.kind === "builtin");
+      if (!hasDataUrls && !hasDummyTracks) return; // nothing to clean up
       const next = clone(content);
       const move = async (obj) => {
         if (obj && typeof obj.src === "string" && obj.src.startsWith("data:image")) {
@@ -94,7 +96,8 @@ export function useContent() {
       if (next.hero?.photo) await move(next.hero.photo);
       if (next.closing?.photo) await move(next.closing.photo);
       if (next.music?.cover) await move(next.music.cover);
-      // Persist the shrunken content (idb references instead of data URLs).
+      // Drop the old placeholder (dummy) songs — the owner adds their own.
+      if (next.music?.tracks) next.music.tracks = next.music.tracks.filter((t) => t.kind !== "builtin");
       commit((c) => {
         c.groups = next.groups;
         c.hero = next.hero;

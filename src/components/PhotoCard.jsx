@@ -132,11 +132,11 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
           aria-label={`Open photo: ${photo.caption || photo.alt || "memory"}`}
         >
           {media}
-          {photo.caption ? (
-            <figcaption className="photo-card__caption">{photo.caption}</figcaption>
-          ) : null}
         </button>
       </div>
+      {photo.caption ? (
+        <figcaption className="photo-card__caption-below">{photo.caption}</figcaption>
+      ) : null}
     </figure>
   );
 }

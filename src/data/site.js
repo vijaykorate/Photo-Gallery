@@ -21,8 +21,8 @@ export const site = {
     // Thin scroll-progress bar along the very top of the page.
     scrollProgress: true,
 
-    // Background music player (a full playlist). Never autoplays.
-    // The songs live in src/data/playlist.js.
+    // Background music player. Never autoplays. There are no default songs —
+    // add your own in Edit mode (4-tap the player) and they're saved locally.
     music: {
       enabled: true,
     },
