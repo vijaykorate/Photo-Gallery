@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { useMusic } from "./MusicProvider.jsx";
 import { useEdit } from "../edit/EditContext.jsx";
-import { resizeImage } from "../../lib/resizeImage.js";
-import { putAudio, deleteAudio } from "../../lib/audioStore.js";
+import { resizeToBlob } from "../../lib/resizeImage.js";
+import { putAudio, deleteAudio, putImage } from "../../lib/audioStore.js";
+import ResolvedImg from "../ResolvedImg.jsx";
 import PlayIcon from "./PlayIcon.jsx";
 import "./music.css";
 
@@ -55,8 +56,10 @@ export default function FeaturedPlayer() {
   const changeCover = async (fileList) => {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("image/"));
     if (!file) return;
-    const { src } = await resizeImage(file, { maxEdge: 500 });
-    setMusic({ cover: { src } });
+    const { blob } = await resizeToBlob(file, { maxEdge: 500 });
+    const id = `img-${Date.now()}`;
+    if (blob) await putImage(id, blob);
+    setMusic({ cover: { src: blob ? `idb:${id}` : null } });
     if (coverInput.current) coverInput.current.value = "";
   };
 
@@ -88,7 +91,7 @@ export default function FeaturedPlayer() {
         {/* The album art + title form the secret "tap 4× to edit songs" area. */}
         <div className="fplayer__tap" onClick={onArtTap} title="Tap 4 times to edit songs">
           <span className={`fplayer__art ${isPlaying ? "is-spinning" : ""}`} aria-hidden="true">
-            {cover?.src ? <img src={cover.src} alt="" /> : <span className="fplayer__art-dot" />}
+            {cover?.src ? <ResolvedImg src={cover.src} alt="" /> : <span className="fplayer__art-dot" />}
           </span>
 
           <div className="fplayer__mid">

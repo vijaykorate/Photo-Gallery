@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { defaultContent } from "../data/defaults.js";
+import { putImage } from "../lib/audioStore.js";
 
 // One editable content object (hero + closing + trip/occasion groups) kept in
 // the browser's localStorage. Everything the owner edits on screen flows
@@ -63,6 +64,45 @@ export function useContent() {
       }
       return next;
     });
+  }, []);
+
+  // One-time migration: older galleries stored photos as big data URLs inside
+  // localStorage (which caps at ~5MB and could overflow). Move any such images
+  // into IndexedDB (roomy) and replace them with lightweight references, so a
+  // large gallery can never overflow again. Runs once, then no-ops.
+  const migrated = useRef(false);
+  useEffect(() => {
+    if (migrated.current) return;
+    migrated.current = true;
+    (async () => {
+      const src0 = JSON.stringify(content);
+      if (!src0.includes("data:image")) return; // nothing to migrate
+      const next = clone(content);
+      const move = async (obj) => {
+        if (obj && typeof obj.src === "string" && obj.src.startsWith("data:image")) {
+          try {
+            const blob = await (await fetch(obj.src)).blob();
+            const id = uid("img");
+            await putImage(id, blob);
+            obj.src = `idb:${id}`;
+          } catch {
+            /* leave as-is on failure */
+          }
+        }
+      };
+      for (const g of next.groups) for (const ph of g.photos) await move(ph);
+      if (next.hero?.photo) await move(next.hero.photo);
+      if (next.closing?.photo) await move(next.closing.photo);
+      if (next.music?.cover) await move(next.music.cover);
+      // Persist the shrunken content (idb references instead of data URLs).
+      commit((c) => {
+        c.groups = next.groups;
+        c.hero = next.hero;
+        c.closing = next.closing;
+        c.music = next.music;
+      });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const findGroup = (c, id) => c.groups.find((g) => g.id === id);

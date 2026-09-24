@@ -11,6 +11,7 @@ import Lightbox from "./components/Lightbox.jsx";
 import Footer from "./components/Footer.jsx";
 import EditToggle from "./components/edit/EditToggle.jsx";
 import AddGroup from "./components/edit/AddGroup.jsx";
+import BackupControls from "./components/edit/BackupControls.jsx";
 
 import { MusicProvider } from "./components/music/MusicProvider.jsx";
 
@@ -63,6 +64,7 @@ function AppInner() {
       />
 
       {features.edit ? <EditToggle /> : null}
+      {features.edit ? <BackupControls /> : null}
     </>
   );
 

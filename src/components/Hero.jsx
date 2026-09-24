@@ -1,7 +1,9 @@
 import { useRef, useState } from "react";
 import { site } from "../data/site.js";
 import { toneGradient } from "../lib/gradient.js";
-import { resizeImage } from "../lib/resizeImage.js";
+import { resizeToBlob } from "../lib/resizeImage.js";
+import { putImage } from "../lib/audioStore.js";
+import ResolvedImg from "./ResolvedImg.jsx";
 import { useEdit } from "./edit/EditContext.jsx";
 import EditableText from "./edit/EditableText.jsx";
 import FeaturedPlayer from "./music/FeaturedPlayer.jsx";
@@ -24,8 +26,10 @@ export default function Hero() {
     if (!file) return;
     setBusy(true);
     try {
-      const { src } = await resizeImage(file, { maxEdge: 2000 });
-      setHero({ photo: { src, alt: hero.photo?.alt || "A favorite memory" } });
+      const { blob } = await resizeToBlob(file, { maxEdge: 2000 });
+      const id = `img-${Date.now()}`;
+      if (blob) await putImage(id, blob);
+      setHero({ photo: { src: blob ? `idb:${id}` : null, alt: hero.photo?.alt || "A favorite memory" } });
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -39,11 +43,10 @@ export default function Hero() {
         style={hasImage ? undefined : { background: toneGradient(["#c9b3e0", "#7c53b8"]) }}
       >
         {hasImage ? (
-          <img
+          <ResolvedImg
             className="hero__img"
             src={photo.src}
             alt={photo.alt || ""}
-            fetchpriority="high"
             decoding="async"
             draggable="false"
           />

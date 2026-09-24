@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toneGradient } from "../lib/gradient.js";
+import ResolvedImg from "./ResolvedImg.jsx";
 import "./Lightbox.css";
 
 // Fullscreen photo viewer.
@@ -153,7 +154,7 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
         onTouchEnd={onTouchEnd}
       >
         {hasImage ? (
-          <img
+          <ResolvedImg
             className="lightbox__img"
             src={photo.src}
             alt={photo.alt || ""}

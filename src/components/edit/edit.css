@@ -63,6 +63,32 @@
   }
 }
 
+/* Backup / Restore controls (edit mode), bottom-left. */
+.backup-bar {
+  position: fixed;
+  left: max(env(safe-area-inset-left), 1.1rem);
+  bottom: max(env(safe-area-inset-bottom), 1.1rem);
+  z-index: 90;
+  display: flex;
+  gap: 0.5rem;
+}
+.backup-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.backup-bar__btn:hover {
+  background: var(--bg-tint);
+}
+
 /* ---- Per-group edit bar ---- */
 .group-edit {
   display: flex;

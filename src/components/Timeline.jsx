@@ -1,6 +1,7 @@
 import { useReveal } from "../hooks/useReveal.js";
 import { useEdit } from "./edit/EditContext.jsx";
 import EditableText from "./edit/EditableText.jsx";
+import ResolvedImg from "./ResolvedImg.jsx";
 import "./Timeline.css";
 
 // A visual trip timeline, built automatically from your "trip" sections.
@@ -13,7 +14,7 @@ function TimelineItem({ item, editing, updateGroup }) {
       <span className="tl__node" aria-hidden="true" />
       {item.photo ? (
         <span className="tl__photo">
-          <img src={item.photo} alt={item.trip} loading="lazy" decoding="async" draggable="false" />
+          <ResolvedImg src={item.photo} alt={item.trip} loading="lazy" decoding="async" draggable="false" />
         </span>
       ) : null}
       <span className="tl__text">

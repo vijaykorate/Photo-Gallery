@@ -1,7 +1,9 @@
 import { useRef, useState } from "react";
 import { useReveal } from "../hooks/useReveal.js";
 import { toneGradient } from "../lib/gradient.js";
-import { resizeImage } from "../lib/resizeImage.js";
+import { resizeToBlob } from "../lib/resizeImage.js";
+import { putImage } from "../lib/audioStore.js";
+import ResolvedImg from "./ResolvedImg.jsx";
 import { useEdit } from "./edit/EditContext.jsx";
 import "./PhotoCard.css";
 
@@ -19,9 +21,11 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
   const replacePhoto = async (fileList) => {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("image/"));
     if (!file) return;
-    const { src, width, height } = await resizeImage(file);
+    const { blob, width, height } = await resizeToBlob(file);
+    const id = `img-${Date.now()}`;
+    if (blob) await putImage(id, blob);
     edit.updatePhoto(groupId, photo.id, {
-      src,
+      src: blob ? `idb:${id}` : photo.src,
       ratio: width && height ? `${width}/${height}` : photo.ratio,
     });
     if (replaceInput.current) replaceInput.current.value = "";
@@ -31,7 +35,7 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
   const ratio = photo.ratio || "3/4";
 
   const media = hasImage ? (
-    <img
+    <ResolvedImg
       className="photo-card__img"
       src={photo.src}
       alt={photo.alt || ""}

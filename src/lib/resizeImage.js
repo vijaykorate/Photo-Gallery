@@ -30,12 +30,24 @@ export function resizeImage(file, { maxEdge = 1600, quality = 0.82 } = {}) {
         } catch {
           src = reader.result; // fall back to the original if canvas is tainted
         }
-        resolve({ src, width, height });
+        resolve({ src, width, height, canvas });
       };
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
   });
+}
+
+// Same as resizeImage but returns a compact JPEG Blob (for IndexedDB storage)
+// instead of a big data URL — keeps localStorage tiny so photos never overflow.
+export async function resizeToBlob(file, opts = {}) {
+  const { width, height, canvas } = await resizeImage(file, opts);
+  const quality = opts.quality ?? 0.82;
+  const blob = await new Promise((resolve) => {
+    if (canvas && canvas.toBlob) canvas.toBlob((b) => resolve(b), "image/jpeg", quality);
+    else resolve(null);
+  });
+  return { blob, width, height };
 }
 
 export default resizeImage;
