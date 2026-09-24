@@ -1,0 +1,218 @@
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.4rem, 2vw, 1.5rem);
+  padding: clamp(0.8rem, 3vw, 2rem);
+  padding: max(env(safe-area-inset-top), 0.8rem) max(env(safe-area-inset-right), 0.8rem)
+    max(env(safe-area-inset-bottom), 0.8rem) max(env(safe-area-inset-left), 0.8rem);
+  background: rgba(22, 15, 10, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: lb-fade 0.35s var(--ease);
+}
+
+@keyframes lb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- The photo ---- */
+.lightbox__stage {
+  grid-column: 2;
+  justify-self: center;
+  align-self: center;
+  margin: 0;
+  max-width: min(94vw, 1100px);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: lb-pop 0.4s var(--ease);
+}
+
+.lightbox__stage.is-next {
+  animation: lb-slide-next 0.4s var(--ease);
+}
+.lightbox__stage.is-prev {
+  animation: lb-slide-prev 0.4s var(--ease);
+}
+
+.lightbox__img,
+.lightbox__placeholder {
+  max-width: min(94vw, 1100px);
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  object-fit: contain;
+}
+
+.lightbox__placeholder {
+  width: min(70vw, 520px);
+  border-radius: var(--radius);
+}
+
+.lightbox__caption {
+  margin-top: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lightbox__alt {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.lightbox__date {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---- Controls ---- */
+.lightbox__close,
+.lightbox__nav {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lightbox__close:hover,
+.lightbox__nav:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.lightbox__nav:active {
+  transform: scale(0.92);
+}
+
+.lightbox__close {
+  position: absolute;
+  top: max(env(safe-area-inset-top), 1rem);
+  right: max(env(safe-area-inset-right), 1rem);
+  width: 46px;
+  height: 46px;
+  z-index: 2;
+}
+
+.lightbox__nav {
+  width: 54px;
+  height: 54px;
+  align-self: center;
+}
+.lightbox__nav--prev {
+  grid-column: 1;
+}
+.lightbox__nav--next {
+  grid-column: 3;
+}
+
+.lightbox__counter {
+  position: absolute;
+  left: 50%;
+  bottom: max(env(safe-area-inset-bottom), 1rem);
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.74rem;
+  letter-spacing: 0.24em;
+}
+
+@keyframes lb-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes lb-slide-next {
+  from {
+    opacity: 0;
+    transform: translateX(4%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes lb-slide-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-4%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Mobile: controls move to thumb-reach at the bottom ---- */
+@media (max-width: 640px) {
+  .lightbox {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    justify-items: center;
+  }
+  .lightbox__stage {
+    grid-column: 1;
+    grid-row: 1;
+    max-height: 74vh;
+  }
+  .lightbox__img,
+  .lightbox__placeholder {
+    max-height: 68vh;
+  }
+  .lightbox__nav {
+    grid-row: 2;
+    width: 58px;
+    height: 58px;
+    margin-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+  }
+  .lightbox__nav--prev {
+    grid-column: 1;
+    justify-self: start;
+    margin-left: 1.4rem;
+  }
+  .lightbox__nav--next {
+    grid-column: 1;
+    justify-self: end;
+    margin-right: 1.4rem;
+  }
+  .lightbox__counter {
+    bottom: auto;
+    top: max(env(safe-area-inset-top), 1rem);
+    left: 1.2rem;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox,
+  .lightbox__stage,
+  .lightbox__stage.is-next,
+  .lightbox__stage.is-prev {
+    animation: none;
+  }
+}

@@ -1,0 +1,161 @@
+/* ==========================================================================
+   DESIGN SYSTEM
+   Warm, minimal, premium. Edit the tokens below to re-theme the whole site.
+   ========================================================================== */
+
+:root {
+  /* ---- Color (a soft, all-over purple theme) ---- */
+  --bg: #ece2f7;            /* page background (light lavender) */
+  --bg-tint: #e0d0f2;       /* alternating section wash (deeper lavender) */
+  --surface: #f6eefc;       /* cards / panels */
+  --ink: #2c2044;           /* primary text (deep plum) */
+  --ink-soft: #5d4f81;      /* secondary text (muted purple) */
+  --ink-faint: #9c8cc0;     /* captions, hints */
+  --line: #d8c6ec;          /* hairlines / borders */
+  --accent: #7c53b8;        /* purple accent */
+  --accent-strong: #5f3b98; /* deeper purple (hover / gradients) */
+  --accent-soft: #b79bd6;   /* light purple (gradient highlight) */
+
+  /* ---- Typography ---- */
+  /* Soft serif for display. No web-font download — swap here for a custom font
+     (see README) and it updates everywhere. */
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+    Georgia, "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* ---- Spacing scale ---- */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+  --space-7: 9rem;
+
+  /* ---- Shape & depth ---- */
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 30px;
+  --shadow-sm: 0 2px 10px rgba(52, 34, 66, 0.07);
+  --shadow: 0 14px 40px rgba(52, 34, 66, 0.14);
+  --shadow-lg: 0 30px 80px rgba(30, 16, 40, 0.30);
+
+  /* ---- Layout ---- */
+  --maxw: 1200px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  color-scheme: light;
+}
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  /* A soft, continuous page wash with a gentle glow up top — more premium
+     than flat blocks of color. */
+  background:
+    radial-gradient(1100px 620px at 50% -8%, #f4ecfc 0%, rgba(244, 236, 252, 0) 60%),
+    linear-gradient(180deg, var(--bg) 0%, #e6d8f3 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Guard against any accidental horizontal scroll on small screens. */
+  overflow-x: hidden;
+}
+
+img,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Shared helpers ---- */
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(1.1rem, 5vw, 3rem);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Reveal-on-scroll base (paired with the useReveal hook). */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Focus visibility for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,146 @@
+.hero {
+  position: relative;
+  /* Tall enough to hold the intro + the player over the photo, but not so tall
+     it demands a huge image. */
+  min-height: clamp(560px, 90vh, 860px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: clamp(1.2rem, 3.5vh, 2.4rem);
+  text-align: center;
+  padding-bottom: clamp(1.6rem, 4vh, 3rem);
+  overflow: hidden;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Slow, subtle drift-in of the featured photo. */
+  animation: hero-zoom 14s var(--ease) forwards;
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Legible overlay for the text, warm at the base. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(28, 20, 12, 0.12) 0%,
+    rgba(28, 20, 12, 0) 30%,
+    rgba(28, 20, 12, 0.15) 62%,
+    rgba(24, 16, 10, 0.55) 100%
+  );
+}
+
+/* The music player, sitting over the lower part of the home photo. */
+.hero__player {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hero__content {
+  color: #fff;
+  max-width: 40ch;
+}
+
+.hero__eyebrow {
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: var(--space-2);
+}
+
+.hero__title {
+  font-size: clamp(2.8rem, 1.8rem + 7vw, 6.5rem);
+  color: #fff;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+}
+
+.hero__tagline {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.05rem, 0.9rem + 1vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.4);
+}
+
+.hero__scroll {
+  position: absolute;
+  bottom: 1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 26px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85), transparent);
+  animation: scroll-pulse 2.4s var(--ease) infinite;
+  transform-origin: top;
+}
+
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleY(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* Staggered entrance for the hero text. --d sets each item's delay. */
+.hero__enter {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: hero-in 1s var(--ease) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes hero-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__img,
+  .hero__scroll-line {
+    animation: none;
+  }
+  .hero__enter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
