@@ -31,7 +31,7 @@
   position: fixed;
   right: max(env(safe-area-inset-right), 1.1rem);
   bottom: max(env(safe-area-inset-bottom), 1.1rem);
-  z-index: 90;
+  z-index: 95; /* always above the bottom-left backup/publish bar */
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -155,6 +155,12 @@
   align-items: center;
   gap: 0.5rem;
   max-width: min(24rem, calc(100vw - 2.2rem));
+  /* The container's empty area must NOT eat taps meant for the finish (✓) button
+     that sits in the bottom-right — only its actual controls are interactive. */
+  pointer-events: none;
+}
+.backup-bar > * {
+  pointer-events: auto;
 }
 .backup-bar__btn {
   display: inline-flex;
@@ -196,6 +202,8 @@
   border-radius: 0.7rem;
   box-shadow: var(--shadow-sm);
   padding: 0.5rem 0.7rem;
+  pointer-events: none; /* text only — never intercept taps */
+  max-width: 18rem;
 }
 
 /* ---- Per-group edit bar ---- */
