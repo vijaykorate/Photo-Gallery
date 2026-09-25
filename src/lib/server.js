@@ -56,9 +56,10 @@ export function imageUrl(id) {
 // fall back to the original. If the CDN itself isn't available (e.g. plain
 // `vite preview`), ResolvedImg retries with the untransformed source.
 function cdnSource(src) {
-  if (typeof src !== "string") return null;
-  if (src.startsWith("srv:")) return `${FN}/image?id=${encodeURIComponent(src.slice(4))}`;
-  if (src.startsWith("/images/")) return src;
+  // Only transform the known-static seed images. Uploaded (srv:) photos load via
+  // the direct function path, which always works — so nothing ever goes blank if
+  // the Image CDN can't transform a source.
+  if (typeof src === "string" && src.startsWith("/images/")) return src;
   return null;
 }
 

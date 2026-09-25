@@ -76,9 +76,6 @@ export default function Hero() {
             className="hero__img"
             src={photo.src}
             alt={photo.alt || ""}
-            widths={[768, 1200, 1600, 2000]}
-            sizes="100vw"
-            quality={78}
             decoding="async"
             loading="eager"
             fetchpriority="high"

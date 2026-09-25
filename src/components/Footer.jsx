@@ -44,8 +44,6 @@ export default function Footer() {
             className="closing__img"
             src={photo.src}
             alt={photo.alt || ""}
-            widths={[768, 1200, 1600]}
-            sizes="100vw"
             loading="lazy"
             decoding="async"
             draggable="false"
