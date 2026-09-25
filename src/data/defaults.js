@@ -26,7 +26,8 @@ export const defaultContent = {
   music: {
     cover: null,
     tracks: [
-      // { id: "song-1", kind: "url", src: "/music/FILENAME.mp3", title: "Song title", artist: "" },
+      { id: "song-1", kind: "url", src: "/music/track-13.mp3", title: "Track 13", artist: "" },
+      // Add more: { id: "song-2", kind: "url", src: "/music/FILENAME.mp3", title: "…", artist: "" },
     ],
   },
   groups: [
