@@ -49,6 +49,33 @@ export function imageUrl(id) {
   return `${FN}/image?id=${encodeURIComponent(id)}`;
 }
 
+// ---- Netlify Image CDN helpers ----------------------------------------------
+// Serve photos small, in a modern format, sized to the screen. Works for our
+// server-hosted (srv:) and baked (/images/*) photos. Local browser images
+// (idb:) and data URLs can't be transformed, so these return null and callers
+// fall back to the original. If the CDN itself isn't available (e.g. plain
+// `vite preview`), ResolvedImg retries with the untransformed source.
+function cdnSource(src) {
+  if (typeof src !== "string") return null;
+  if (src.startsWith("srv:")) return `${FN}/image?id=${encodeURIComponent(src.slice(4))}`;
+  if (src.startsWith("/images/")) return src;
+  return null;
+}
+
+export function cdnUrl(src, w, q = 72) {
+  const s = cdnSource(src);
+  if (!s) return null;
+  return `/.netlify/images?url=${encodeURIComponent(s)}&w=${w}&q=${q}`;
+}
+
+export function cdnSrcSet(src, widths, q = 72) {
+  const s = cdnSource(src);
+  if (!s) return null;
+  return widths
+    .map((w) => `/.netlify/images?url=${encodeURIComponent(s)}&w=${w}&q=${q} ${w}w`)
+    .join(", ");
+}
+
 export async function login(password) {
   try {
     const res = await fetch(`${FN}/auth`, {

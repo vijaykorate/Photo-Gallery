@@ -40,7 +40,7 @@ function TimelineItem({ item, editing, updateGroup }) {
       <span className="tl__node" aria-hidden="true" />
       {item.photo ? (
         <span className="tl__photo">
-          <ResolvedImg src={item.photo} alt={item.trip} loading="lazy" decoding="async" draggable="false" />
+          <ResolvedImg src={item.photo} alt={item.trip} widths={[120, 240]} sizes="72px" loading="lazy" decoding="async" draggable="false" />
         </span>
       ) : null}
       <span className="tl__text">

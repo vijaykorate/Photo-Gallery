@@ -311,6 +311,9 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
             className="lightbox__img"
             src={photo.src}
             alt={photo.alt || ""}
+            widths={[800, 1200, 1600, 2000]}
+            sizes="min(94vw, 1100px)"
+            quality={80}
             decoding="async"
             draggable="false"
             style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
