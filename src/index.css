@@ -58,58 +58,6 @@
   color-scheme: light;
 }
 
-/* ---- Color: DARK theme ---- */
-/* Applied when the OS prefers dark (unless the user forced light), and whenever
-   the user manually picks dark via the theme toggle (data-theme="dark"). */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #140f1f;
-    --bg-deep: #0c0815;
-    --bg-tint: #1b1430;
-    --glow: #241a3a;
-    --surface: #211934;
-    --surface-2: #2b2145;
-    --ink: #f2ecfb;
-    --ink-soft: #c4b7df;
-    --ink-faint: #8e7fb0;
-    --line: #362949;
-    --accent: #a985e0;
-    --accent-strong: #c6a9ef;
-    --accent-soft: #6d4ba1;
-    --danger: #ff8397;
-    --danger-soft: #3a1f28;
-    --skeleton: rgba(169, 133, 224, 0.10);
-    --skeleton-sheen: rgba(169, 133, 224, 0.22);
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 12px rgba(0, 0, 0, 0.5);
-    --shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.55);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 50px 100px rgba(0, 0, 0, 0.72);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #140f1f;
-  --bg-deep: #0c0815;
-  --bg-tint: #1b1430;
-  --glow: #241a3a;
-  --surface: #211934;
-  --surface-2: #2b2145;
-  --ink: #f2ecfb;
-  --ink-soft: #c4b7df;
-  --ink-faint: #8e7fb0;
-  --line: #362949;
-  --accent: #a985e0;
-  --accent-strong: #c6a9ef;
-  --accent-soft: #6d4ba1;
-  --danger: #ff8397;
-  --danger-soft: #3a1f28;
-  --skeleton: rgba(169, 133, 224, 0.10);
-  --skeleton-sheen: rgba(169, 133, 224, 0.22);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 12px rgba(0, 0, 0, 0.5);
-  --shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 50px 100px rgba(0, 0, 0, 0.72);
-  color-scheme: dark;
-}
-
 /* ---- Reset ---- */
 *,
 *::before,

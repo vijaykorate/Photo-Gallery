@@ -9,21 +9,6 @@
     <title>Our Memories</title>
     <meta name="description" content="A little place for our memories." />
 
-    <!-- No-flash theme: apply the saved light/dark choice before first paint. -->
-    <script>
-      (function () {
-        try {
-          var t = localStorage.getItem("photo-gallery/theme");
-          if (t === "light" || t === "dark") {
-            document.documentElement.setAttribute("data-theme", t);
-          }
-          var dark = t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches);
-          var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute("content", dark ? "#140f1f" : "#e7dcf5");
-        } catch (e) {}
-      })();
-    </script>
-
     <!-- Icons + installable web app -->
     <link
       rel="icon"
