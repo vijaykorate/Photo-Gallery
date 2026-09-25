@@ -27,6 +27,8 @@ export default function Hero() {
   // text eases away as the gallery arrives. Disabled under reduced-motion.
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    // Parallax is the jankiest thing on phones and adds little there — desktop only.
+    if (!window.matchMedia?.("(min-width: 900px)").matches) return;
     let raf = 0;
     const onScroll = () => {
       if (raf) return;

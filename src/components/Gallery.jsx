@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import PhotoCard from "./PhotoCard.jsx";
 import "./Gallery.css";
 
@@ -13,40 +13,28 @@ import "./Gallery.css";
 export default function Gallery({ photos, groupId, startIndex = 0, onOpen }) {
   const gridRef = useRef(null);
 
-  // Compute each card's row span from its measured height + the grid's own
-  // row unit / gap (read from computed style, so it stays in sync with the CSS
-  // breakpoints without duplicating them here).
-  const resize = useCallback((card) => {
-    const grid = gridRef.current;
-    if (!grid || !card) return;
-    const cs = getComputedStyle(grid);
-    const row = parseFloat(cs.gridAutoRows) || 8;
-    const gap = parseFloat(cs.rowGap) || 0;
-    const h = card.getBoundingClientRect().height;
-    const span = Math.max(1, Math.round((h + gap) / (row + gap)));
-    card.style.setProperty("--span", span);
-  }, []);
-
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
-    const cards = Array.from(grid.children);
-    const layoutAll = () => cards.forEach(resize);
-    layoutAll();
 
-    // Recompute a card whenever its size changes (image decodes, caption wraps).
-    const ro =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver((entries) => entries.forEach((e) => resize(e.target)))
-        : null;
-    if (ro) cards.forEach((c) => ro.observe(c));
+    if (typeof ResizeObserver === "undefined") return; // graceful: even columns
 
-    window.addEventListener("resize", layoutAll);
-    return () => {
-      ro?.disconnect();
-      window.removeEventListener("resize", layoutAll);
-    };
-  }, [photos, resize]);
+    // One ResizeObserver for all tiles. We use the observer's own height
+    // measurement (contentRect) instead of getBoundingClientRect, so recomputing
+    // spans never forces a synchronous reflow — much smoother with many photos.
+    const ro = new ResizeObserver((entries) => {
+      const cs = getComputedStyle(grid);
+      const row = parseFloat(cs.gridAutoRows) || 8;
+      const gap = parseFloat(cs.rowGap) || 0;
+      for (const e of entries) {
+        const h = e.contentRect.height;
+        const span = Math.max(1, Math.round((h + gap) / (row + gap)));
+        e.target.style.setProperty("--span", span);
+      }
+    });
+    Array.from(grid.children).forEach((c) => ro.observe(c));
+    return () => ro.disconnect();
+  }, [photos]);
 
   return (
     <div className="gallery" ref={gridRef}>

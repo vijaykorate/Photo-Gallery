@@ -133,7 +133,9 @@ body {
   background:
     radial-gradient(1100px 620px at 50% -8%, var(--glow) 0%, transparent 60%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+  /* (no background-attachment: fixed — it forces a full repaint on every scroll
+     frame on mobile, which reads as jank/slowness.) */
   color: var(--ink);
   font-family: var(--font-body);
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);

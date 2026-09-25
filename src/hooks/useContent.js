@@ -26,11 +26,13 @@ function readContent() {
     if (!parsed || !Array.isArray(parsed.groups) || !parsed.hero) return clone(defaultContent);
     // Forward-compat: make sure newer blocks/fields exist.
     if (!parsed.music) parsed.music = clone(defaultContent.music);
-    // Songs are baked into the site (static files) and the same on every device,
-    // so always use the shipped playlist + cover — this also clears any stale
-    // local ("file") tracks left in an existing owner's storage.
-    parsed.music.tracks = clone(defaultContent.music.tracks);
-    parsed.music.cover = clone(defaultContent.music.cover);
+    if (!Array.isArray(parsed.music.tracks)) parsed.music.tracks = clone(defaultContent.music.tracks);
+    if (!("cover" in parsed.music)) parsed.music.cover = null;
+    // Seed the shipped static playlist for anyone who has none yet (so baked
+    // /music/*.mp3 songs appear), but never wipe the owner's own added songs.
+    if (parsed.music.tracks.length === 0 && defaultContent.music.tracks.length > 0) {
+      parsed.music.tracks = clone(defaultContent.music.tracks);
+    }
     if (!parsed.intro) parsed.intro = clone(defaultContent.intro);
     if (!("eyebrow" in parsed.hero)) parsed.hero.eyebrow = defaultContent.hero.eyebrow;
     return parsed;

@@ -8,12 +8,10 @@
   display: grid;
   place-items: center;
   color: var(--ink);
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 999px;
   box-shadow: var(--shadow-sm);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
   transition: transform 0.3s var(--ease), background 0.3s var(--ease),
     color 0.3s var(--ease);
   -webkit-tap-highlight-color: transparent;
