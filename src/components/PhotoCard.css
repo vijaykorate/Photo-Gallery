@@ -12,8 +12,23 @@
   width: 100%;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--line);
+  background: var(--surface-2);
   box-shadow: var(--shadow-sm);
+}
+
+/* Shimmer skeleton while the real image decodes. */
+.photo-card__skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    100deg,
+    var(--skeleton) 30%,
+    var(--skeleton-sheen) 50%,
+    var(--skeleton) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
 }
 
 .photo-card__button {
@@ -57,12 +72,15 @@
     transition: box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
   }
   .photo-card:not(.is-editing):hover .photo-card__frame {
-    box-shadow: var(--shadow);
-    transform: translateY(-3px);
+    box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+    transform: translateY(-4px);
   }
   .photo-card:not(.is-editing):hover .photo-card__img,
   .photo-card:not(.is-editing):hover .photo-card__placeholder {
     transform: scale(calc(var(--zoom, 1) * 1.06));
+  }
+  .photo-card:not(.is-editing):hover .photo-card__caption-below {
+    color: var(--accent);
   }
 }
 
@@ -167,4 +185,12 @@
   flex: 1 1 auto;
   accent-color: var(--accent);
   cursor: pointer;
+}
+.photo-card__adjust-label {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--ink-soft);
 }

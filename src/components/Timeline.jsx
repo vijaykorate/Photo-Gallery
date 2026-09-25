@@ -9,8 +9,34 @@ import "./Timeline.css";
 // trip section, so editing either place keeps both in sync).
 function TimelineItem({ item, editing, updateGroup }) {
   const [ref, visible] = useReveal({ threshold: 0.3 });
+
+  // In view mode, clicking an item jumps to its section.
+  const jump = () => {
+    const el = document.getElementById(item.id);
+    if (!el) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+  const nav = !editing
+    ? {
+        role: "link",
+        tabIndex: 0,
+        onClick: jump,
+        onKeyDown: (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            jump();
+          }
+        },
+      }
+    : {};
+
   return (
-    <li ref={ref} className={`tl__item reveal ${visible ? "is-visible" : ""}`}>
+    <li
+      ref={ref}
+      className={`tl__item reveal ${visible ? "is-visible" : ""} ${editing ? "" : "tl__item--link"}`}
+      {...nav}
+    >
       <span className="tl__node" aria-hidden="true" />
       {item.photo ? (
         <span className="tl__photo">

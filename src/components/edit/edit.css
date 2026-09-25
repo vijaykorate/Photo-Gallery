@@ -151,7 +151,10 @@
   bottom: max(env(safe-area-inset-bottom), 1.1rem);
   z-index: 90;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
+  max-width: min(24rem, calc(100vw - 2.2rem));
 }
 .backup-bar__btn {
   display: inline-flex;
@@ -168,6 +171,31 @@
 }
 .backup-bar__btn:hover {
   background: var(--bg-tint);
+}
+.backup-bar__btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+/* Highlight Publish when there are local-only photos waiting to go up. */
+.backup-bar__btn--attn {
+  color: #fff;
+  background: var(--accent, #7c53b8);
+  border-color: transparent;
+}
+.backup-bar__btn--attn:hover {
+  background: var(--accent, #6a45a3);
+  filter: brightness(1.05);
+}
+.backup-bar__status {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  box-shadow: var(--shadow-sm);
+  padding: 0.5rem 0.7rem;
 }
 
 /* ---- Per-group edit bar ---- */

@@ -17,22 +17,26 @@
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* Scroll parallax offset, set from JS (Hero.jsx). */
+  transform: translate3d(0, var(--parallax, 0px), 0);
+  will-change: transform;
 }
 
 .hero__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Slow, subtle drift-in of the featured photo. */
-  animation: hero-zoom 14s var(--ease) forwards;
+  /* Slow, continuous Ken Burns — a living, breathing photo. */
+  transform-origin: 50% 40%;
+  animation: hero-kenburns 32s ease-in-out infinite alternate;
 }
 
-@keyframes hero-zoom {
+@keyframes hero-kenburns {
   from {
-    transform: scale(1.08);
+    transform: scale(1.04) translate(-1.2%, -0.8%);
   }
   to {
-    transform: scale(1);
+    transform: scale(1.12) translate(1.2%, 0.8%);
   }
 }
 

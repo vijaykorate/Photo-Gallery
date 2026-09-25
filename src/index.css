@@ -4,17 +4,26 @@
    ========================================================================== */
 
 :root {
-  /* ---- Color (a soft, all-over purple theme) ---- */
-  --bg: #ece2f7;            /* page background (light lavender) */
-  --bg-tint: #e0d0f2;       /* alternating section wash (deeper lavender) */
-  --surface: #f6eefc;       /* cards / panels */
-  --ink: #2c2044;           /* primary text (deep plum) */
-  --ink-soft: #5d4f81;      /* secondary text (muted purple) */
-  --ink-faint: #9c8cc0;     /* captions, hints */
-  --line: #d8c6ec;          /* hairlines / borders */
+  /* ---- Color: LIGHT theme (a soft purple keepsake, widened for depth) ---- */
+  --bg: #e7dcf5;            /* page background (lavender) */
+  --bg-deep: #e3d5f2;       /* bottom of the page wash */
+  --bg-tint: #ddccf0;       /* alternating section wash (deeper lavender) */
+  --glow: #f6effe;          /* soft top glow */
+  --surface: #fdfbff;       /* cards / panels (near-white so they lift off the page) */
+  --surface-2: #f4ecfc;     /* nested / inset panels */
+  --ink: #221733;           /* primary text (deep plum, higher contrast) */
+  --ink-soft: #56487a;      /* secondary text (muted purple) */
+  --ink-faint: #9284b6;     /* captions, hints */
+  --line: #d6c6ec;          /* hairlines / borders */
   --accent: #7c53b8;        /* purple accent */
   --accent-strong: #5f3b98; /* deeper purple (hover / gradients) */
   --accent-soft: #b79bd6;   /* light purple (gradient highlight) */
+  --danger: #b0324a;        /* destructive actions */
+  --danger-soft: #f4dbe0;   /* destructive backgrounds */
+
+  /* Loading placeholder base (used by shimmer skeletons). */
+  --skeleton: rgba(124, 83, 184, 0.10);
+  --skeleton-sheen: rgba(124, 83, 184, 0.22);
 
   /* ---- Typography ---- */
   /* Fraunces = soft, elegant display serif (with optical sizing); Inter = clean
@@ -34,19 +43,71 @@
   --space-6: 6rem;
   --space-7: 9rem;
 
-  /* ---- Shape & depth ---- */
+  /* ---- Shape & depth (layered: ambient + key) ---- */
   --radius-sm: 12px;
   --radius: 20px;
   --radius-lg: 30px;
-  --shadow-sm: 0 2px 10px rgba(52, 34, 66, 0.07);
-  --shadow: 0 14px 40px rgba(52, 34, 66, 0.14);
-  --shadow-lg: 0 30px 80px rgba(30, 16, 40, 0.30);
+  --shadow-sm: 0 1px 2px rgba(52, 34, 66, 0.06), 0 3px 10px rgba(52, 34, 66, 0.08);
+  --shadow: 0 4px 12px rgba(52, 34, 66, 0.10), 0 18px 40px rgba(52, 34, 66, 0.16);
+  --shadow-lg: 0 12px 30px rgba(30, 16, 40, 0.22), 0 40px 90px rgba(20, 10, 30, 0.34);
 
   /* ---- Layout ---- */
   --maxw: 1200px;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
   color-scheme: light;
+}
+
+/* ---- Color: DARK theme ---- */
+/* Applied when the OS prefers dark (unless the user forced light), and whenever
+   the user manually picks dark via the theme toggle (data-theme="dark"). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #140f1f;
+    --bg-deep: #0c0815;
+    --bg-tint: #1b1430;
+    --glow: #241a3a;
+    --surface: #211934;
+    --surface-2: #2b2145;
+    --ink: #f2ecfb;
+    --ink-soft: #c4b7df;
+    --ink-faint: #8e7fb0;
+    --line: #362949;
+    --accent: #a985e0;
+    --accent-strong: #c6a9ef;
+    --accent-soft: #6d4ba1;
+    --danger: #ff8397;
+    --danger-soft: #3a1f28;
+    --skeleton: rgba(169, 133, 224, 0.10);
+    --skeleton-sheen: rgba(169, 133, 224, 0.22);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 12px rgba(0, 0, 0, 0.5);
+    --shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 50px 100px rgba(0, 0, 0, 0.72);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #140f1f;
+  --bg-deep: #0c0815;
+  --bg-tint: #1b1430;
+  --glow: #241a3a;
+  --surface: #211934;
+  --surface-2: #2b2145;
+  --ink: #f2ecfb;
+  --ink-soft: #c4b7df;
+  --ink-faint: #8e7fb0;
+  --line: #362949;
+  --accent: #a985e0;
+  --accent-strong: #c6a9ef;
+  --accent-soft: #6d4ba1;
+  --danger: #ff8397;
+  --danger-soft: #3a1f28;
+  --skeleton: rgba(169, 133, 224, 0.10);
+  --skeleton-sheen: rgba(169, 133, 224, 0.22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 12px rgba(0, 0, 0, 0.5);
+  --shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 50px 100px rgba(0, 0, 0, 0.72);
+  color-scheme: dark;
 }
 
 /* ---- Reset ---- */
@@ -68,10 +129,10 @@ html {
 body {
   min-height: 100vh;
   /* A soft, continuous page wash with a gentle glow up top — more premium
-     than flat blocks of color. */
+     than flat blocks of color. Fully theme-driven (light & dark). */
   background:
-    radial-gradient(1100px 620px at 50% -8%, #f4ecfc 0%, rgba(244, 236, 252, 0) 60%),
-    linear-gradient(180deg, var(--bg) 0%, #e6d8f3 100%);
+    radial-gradient(1100px 620px at 50% -8%, var(--glow) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-body);
@@ -136,6 +197,25 @@ h3 {
 .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Every resolved <img> fades in once it has decoded (see ResolvedImg). */
+.rimg {
+  opacity: 0;
+  transition: opacity 0.7s var(--ease);
+}
+.rimg.is-loaded {
+  opacity: 1;
+}
+
+/* Shimmer sweep for loading skeletons (used by photo tiles while images load). */
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
 
 /* Focus visibility for keyboard users. */

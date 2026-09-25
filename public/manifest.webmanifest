@@ -1,0 +1,15 @@
+{
+  "name": "Our Memories",
+  "short_name": "Memories",
+  "description": "A little place for our memories.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#140f1f",
+  "theme_color": "#7c53b8",
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ]
+}

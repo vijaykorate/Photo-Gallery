@@ -11,11 +11,14 @@ import "./PhotoCard.css";
 //  • View mode: lazy image (gradient fallback), optional caption overlay,
 //    subtle hover zoom, opens the lightbox on click / Enter / Space.
 //  • Edit mode: caption text field + remove / reorder controls.
-export default function PhotoCard({ photo, groupId, onOpen }) {
+export default function PhotoCard({ photo, groupId, onOpen, index = 0 }) {
   const edit = useEdit();
   const editing = edit?.editing;
   const [ref, visible] = useReveal();
+  // Cascade: each tile reveals a touch after the previous one (capped).
+  const revealDelay = `${Math.min(index * 0.06, 0.5)}s`;
   const [failed, setFailed] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const replaceInput = useRef(null);
 
   const replacePhoto = async (fileList) => {
@@ -42,7 +45,12 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
       decoding="async"
       draggable="false"
       onError={() => setFailed(true)}
-      style={{ objectFit: photo.fit || "cover", "--zoom": photo.zoom || 1 }}
+      onReady={() => setImgLoaded(true)}
+      style={{
+        objectFit: photo.fit || "cover",
+        objectPosition: `${photo.posX ?? 50}% 50%`,
+        "--zoom": photo.zoom || 1,
+      }}
     />
   ) : (
     <span
@@ -52,11 +60,17 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
     />
   );
 
+  // Shimmer skeleton shown until the real image has decoded (no layout shift —
+  // the frame already reserves space via aspect-ratio).
+  const skeleton =
+    hasImage && !imgLoaded ? <span className="photo-card__skeleton" aria-hidden="true" /> : null;
+
   // ---- Edit mode ----
   if (editing) {
     return (
-      <figure ref={ref} className={`photo-card is-editing reveal ${visible ? "is-visible" : ""}`}>
+      <figure ref={ref} className={`photo-card is-editing reveal ${visible ? "is-visible" : ""}`} style={{ transitionDelay: revealDelay }}>
         <div className="photo-card__frame" style={{ aspectRatio: ratio }}>
+          {skeleton}
           {media}
           <div className="photo-card__edit" onClick={(e) => e.stopPropagation()}>
             <button
@@ -108,6 +122,20 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
             onChange={(e) => edit.updatePhoto(groupId, photo.id, { zoom: Number(e.target.value) })}
           />
         </div>
+        <div className="photo-card__adjust">
+          <span className="photo-card__adjust-label" aria-hidden="true">↔</span>
+          <input
+            type="range"
+            className="photo-card__zoom"
+            min="0"
+            max="100"
+            step="1"
+            value={photo.posX ?? 50}
+            aria-label="Move photo left or right"
+            title="Move photo left / right"
+            onChange={(e) => edit.updatePhoto(groupId, photo.id, { posX: Number(e.target.value) })}
+          />
+        </div>
       </figure>
     );
   }
@@ -121,8 +149,9 @@ export default function PhotoCard({ photo, groupId, onOpen }) {
   };
 
   return (
-    <figure ref={ref} className={`photo-card reveal ${visible ? "is-visible" : ""}`}>
+    <figure ref={ref} className={`photo-card reveal ${visible ? "is-visible" : ""}`} style={{ transitionDelay: revealDelay }}>
       <div className="photo-card__frame" style={{ aspectRatio: ratio }}>
+        {skeleton}
         <button
           type="button"
           className="photo-card__button"

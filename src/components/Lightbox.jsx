@@ -1,23 +1,54 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toneGradient } from "../lib/gradient.js";
+import { imageUrl } from "../lib/server.js";
 import ResolvedImg from "./ResolvedImg.jsx";
 import "./Lightbox.css";
 
 // Fullscreen photo viewer.
 //  • Prev / Next / Close buttons (large, touch-friendly)
-//  • Keyboard: ← → navigate, Esc closes
-//  • Swipe left/right on touch screens
-//  • Click the backdrop to close; focus is trapped while open; body scroll locked
+//  • Keyboard: ← → navigate, Esc closes, +/- zoom
+//  • Zoom: double-click / double-tap toggles 1×↔zoom; wheel + pinch zoom; drag to pan
+//  • Swipe left/right to navigate; drag down to dismiss (when not zoomed)
+//  • Neighbor images are preloaded so navigation is instant
+//  • Backdrop click to close; focus trapped; body scroll locked; changes announced
+const MAX_ZOOM = 3.5;
+
+// A directly-loadable URL for prefetching neighbors (idb: blobs are local/fast).
+function preloadUrl(src) {
+  if (typeof src !== "string") return null;
+  if (src.startsWith("srv:")) return imageUrl(src.slice(4));
+  if (src.startsWith("idb:")) return null;
+  return src;
+}
+
+function clamp(v, lo, hi) {
+  return Math.min(hi, Math.max(lo, v));
+}
+
 export default function Lightbox({ photos, index, onClose, onChange }) {
   const open = index !== null && index >= 0;
   const dialogRef = useRef(null);
   const closeRef = useRef(null);
-  const touchStart = useRef(null);
   const [anim, setAnim] = useState(""); // "next" | "prev" for the slide direction
   const [slideshow, setSlideshow] = useState(false);
 
+  // Zoom / pan / drag-to-dismiss state.
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [drag, setDrag] = useState(0); // vertical dismiss offset (px)
+  const pointers = useRef(new Map());
+  const gesture = useRef(null); // { mode, ... }
+  const lastTap = useRef(0);
+
   const count = photos.length;
   const photo = open ? photos[index] : null;
+  const zoomed = zoom > 1.01;
+
+  const resetView = useCallback(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+    setDrag(0);
+  }, []);
 
   const goNext = useCallback(() => {
     if (count < 2) return;
@@ -31,9 +62,29 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
     onChange((index - 1 + count) % count);
   }, [count, index, onChange]);
 
-  // Slideshow: auto-advance while playing. Stops when closed.
+  // Reset zoom/pan whenever the photo (or open state) changes.
+  useEffect(() => {
+    resetView();
+  }, [index, open, resetView]);
+
+  // Prefetch the neighbours so left/right is instant.
+  useEffect(() => {
+    if (!open || count < 2) return;
+    [index + 1, index - 1].forEach((i) => {
+      const p = photos[((i % count) + count) % count];
+      const u = p && preloadUrl(p.src);
+      if (u) {
+        const im = new Image();
+        im.decoding = "async";
+        im.src = u;
+      }
+    });
+  }, [open, index, count, photos]);
+
+  // Slideshow: auto-advance while playing (not under reduced-motion). Stops when closed.
   useEffect(() => {
     if (!open || !slideshow || count < 2) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const id = setInterval(goNext, 3800);
     return () => clearInterval(id);
   }, [open, slideshow, count, goNext]);
@@ -45,19 +96,27 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
   // Keyboard navigation + focus trap.
   useEffect(() => {
     if (!open) return;
-
     const onKey = (e) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        zoomed ? resetView() : onClose();
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
         goNext();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         goPrev();
+      } else if (e.key === "+" || e.key === "=") {
+        e.preventDefault();
+        setZoom((z) => clamp(z + 0.5, 1, MAX_ZOOM));
+      } else if (e.key === "-") {
+        e.preventDefault();
+        setZoom((z) => {
+          const nz = clamp(z - 0.5, 1, MAX_ZOOM);
+          if (nz <= 1.01) setPan({ x: 0, y: 0 });
+          return nz;
+        });
       } else if (e.key === "Tab") {
-        // Simple focus trap across the interactive controls.
         const focusables = dialogRef.current?.querySelectorAll("button");
         if (!focusables || focusables.length === 0) return;
         const first = focusables[0];
@@ -71,17 +130,15 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
         }
       }
     };
-
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, goNext, goPrev, onClose]);
+  }, [open, goNext, goPrev, onClose, zoomed, resetView]);
 
   // Lock background scroll while open and move focus into the dialog.
   useEffect(() => {
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Focus the close button so keyboard/screen-reader users start inside.
     const t = setTimeout(() => closeRef.current?.focus(), 40);
     return () => {
       document.body.style.overflow = prevOverflow;
@@ -93,21 +150,106 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
 
   const hasImage = Boolean(photo.src);
 
-  // Touch swipe handling.
-  const onTouchStart = (e) => {
-    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  };
-  const onTouchEnd = (e) => {
-    if (!touchStart.current) return;
-    const dx = e.changedTouches[0].clientX - touchStart.current.x;
-    const dy = e.changedTouches[0].clientY - touchStart.current.y;
-    touchStart.current = null;
-    // Horizontal, deliberate swipe only.
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) goNext();
-      else goPrev();
+  // ---- Pointer gestures (mouse + touch, unified) ----
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const pts = () => [...pointers.current.values()];
+
+  const onPointerDown = (e) => {
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const p = pts();
+    if (p.length === 2) {
+      gesture.current = { mode: "pinch", startDist: dist(p[0], p[1]), startZoom: zoom };
+    } else if (p.length === 1) {
+      gesture.current = {
+        mode: zoomed ? "pan" : "decide",
+        startX: e.clientX,
+        startY: e.clientY,
+        panX: pan.x,
+        panY: pan.y,
+      };
     }
   };
+
+  const onPointerMove = (e) => {
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const g = gesture.current;
+    if (!g) return;
+    const p = pts();
+
+    if (g.mode === "pinch" && p.length >= 2) {
+      const nz = clamp((g.startZoom * dist(p[0], p[1])) / (g.startDist || 1), 1, MAX_ZOOM);
+      setZoom(nz);
+      if (nz <= 1.01) setPan({ x: 0, y: 0 });
+      return;
+    }
+
+    const dx = e.clientX - g.startX;
+    const dy = e.clientY - g.startY;
+
+    if (g.mode === "decide") {
+      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+        g.mode = Math.abs(dy) > Math.abs(dx) ? "dismiss" : "swipe";
+      }
+    }
+    if (g.mode === "pan") {
+      setPan({ x: g.panX + dx, y: g.panY + dy });
+    } else if (g.mode === "dismiss") {
+      setDrag(Math.max(0, dy));
+    } else if (g.mode === "swipe") {
+      g.dx = dx;
+    }
+  };
+
+  const endGesture = (e) => {
+    pointers.current.delete(e.pointerId);
+    const g = gesture.current;
+    if (!g) return;
+    if (pointers.current.size > 0) {
+      // second finger lifted after pinch — settle
+      if (zoom <= 1.01) setPan({ x: 0, y: 0 });
+      gesture.current = null;
+      return;
+    }
+    if (g.mode === "swipe" && Math.abs(g.dx || 0) > 55) {
+      (g.dx < 0 ? goNext : goPrev)();
+    } else if (g.mode === "dismiss") {
+      if (drag > 110) onClose();
+      else setDrag(0);
+    } else if (g.mode === "pinch" && zoom <= 1.05) {
+      resetView();
+    }
+    gesture.current = null;
+  };
+
+  const onDoubleClick = (e) => {
+    e.stopPropagation();
+    setZoom((z) => (z > 1.01 ? 1 : 2.4));
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Single-finger double-tap (touch) — dblclick doesn't fire reliably on mobile.
+  const onStagePointerUp = (e) => {
+    const now = e.timeStamp;
+    if (now - lastTap.current < 300 && pointers.current.size === 0) {
+      onDoubleClick(e);
+    }
+    lastTap.current = now;
+    endGesture(e);
+  };
+
+  const onWheel = (e) => {
+    if (!e.ctrlKey && Math.abs(e.deltaY) < 2) return;
+    e.preventDefault();
+    setZoom((z) => {
+      const nz = clamp(z - e.deltaY * 0.002, 1, MAX_ZOOM);
+      if (nz <= 1.01) setPan({ x: 0, y: 0 });
+      return nz;
+    });
+  };
+
+  const backdropOpacity = 1 - clamp(drag / 500, 0, 0.75);
 
   return (
     <div
@@ -117,7 +259,13 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
       aria-label={photo.alt || "Photo"}
       ref={dialogRef}
       onClick={onClose}
+      style={{ "--backdrop": backdropOpacity }}
     >
+      {/* Screen-reader announcement of the current photo. */}
+      <p className="lightbox__live" aria-live="polite">
+        {`Photo ${index + 1} of ${count}${photo.caption || photo.alt ? `: ${photo.caption || photo.alt}` : ""}`}
+      </p>
+
       <button
         type="button"
         className="lightbox__close"
@@ -147,11 +295,16 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
       ) : null}
 
       <figure
-        className={`lightbox__stage ${anim ? `is-${anim}` : ""}`}
+        className={`lightbox__stage ${anim ? `is-${anim}` : ""} ${zoomed ? "is-zoomed" : ""} ${drag ? "is-dragging" : ""}`}
         key={photo.id}
+        style={{ transform: `translateY(${drag}px)` }}
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        onDoubleClick={onDoubleClick}
+        onWheel={onWheel}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onStagePointerUp}
+        onPointerCancel={endGesture}
       >
         {hasImage ? (
           <ResolvedImg
@@ -160,6 +313,7 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
             alt={photo.alt || ""}
             decoding="async"
             draggable="false"
+            style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
           />
         ) : (
           <span
@@ -168,7 +322,7 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
             aria-hidden="true"
           />
         )}
-        {(photo.caption || photo.alt) && (
+        {(photo.caption || photo.alt) && !zoomed && (
           <figcaption className="lightbox__caption">
             <span className="lightbox__alt">{photo.caption || photo.alt}</span>
           </figcaption>
@@ -192,14 +346,11 @@ export default function Lightbox({ photos, index, onClose, onChange }) {
       ) : null}
 
       {count > 1 ? (
-        <div className="lightbox__bottom">
+        <div className="lightbox__bottom" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
             className={`lightbox__slideshow ${slideshow ? "is-on" : ""}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSlideshow((v) => !v);
-            }}
+            onClick={() => setSlideshow((v) => !v)}
             aria-pressed={slideshow}
             aria-label={slideshow ? "Pause slideshow" : "Play slideshow"}
           >

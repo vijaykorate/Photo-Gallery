@@ -3,6 +3,18 @@
   publish = "dist"
   functions = "netlify/functions"
 
+# Long-cache immutable assets. Vite fingerprints /assets/* filenames, so they're
+# safe to cache forever; the seed photos rarely change.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
 # SPA fallback for client-side routing (but let /.netlify/* and assets pass through).
 [[redirects]]
   from = "/*"

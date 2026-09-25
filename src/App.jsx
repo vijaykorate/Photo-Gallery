@@ -3,6 +3,8 @@ import { site } from "./data/site.js";
 import { EditProvider, useEdit } from "./components/edit/EditContext.jsx";
 
 import Intro from "./components/Intro.jsx";
+import ThemeToggle from "./components/ThemeToggle.jsx";
+import BackToTop from "./components/BackToTop.jsx";
 import ScrollProgress from "./components/ScrollProgress.jsx";
 import Hero from "./components/Hero.jsx";
 import Section from "./components/Section.jsx";
@@ -42,6 +44,7 @@ function AppInner() {
     <>
       {features.intro ? <Intro /> : null}
       {features.scrollProgress ? <ScrollProgress /> : null}
+      <ThemeToggle />
 
       <Hero />
 
@@ -56,6 +59,8 @@ function AppInner() {
       </main>
 
       <Footer />
+
+      <BackToTop />
 
       <Lightbox
         photos={flatPhotos}

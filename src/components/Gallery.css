@@ -1,49 +1,46 @@
-/* Masonry via CSS columns — no JavaScript, no library.
-   Column count is purpose-built per screen size (mobile is NOT a shrunk desktop). */
+/* Row-major masonry via CSS grid + JS-computed row spans (see Gallery.jsx).
+   Column count is purpose-built per screen size (mobile is NOT a shrunk desktop).
+   `grid-auto-rows` is the small unit the span math is based on; `gap` is read by
+   the JS, so keep both here as the single source of truth. */
 .gallery {
-  column-count: 2;          /* small phones: two slim columns */
-  column-gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* small phones: two slim columns */
+  grid-auto-rows: 8px;
+  gap: 12px;
+  align-items: start;
 }
 
 .gallery > .photo-card {
-  margin-bottom: 12px;
+  grid-row-end: span var(--span, 40);
+  margin: 0; /* spacing comes from the grid gap; margins would break span math */
 }
 
 /* Larger phones — a touch more breathing room. */
 @media (min-width: 480px) {
   .gallery {
-    column-gap: 14px;
-  }
-  .gallery > .photo-card {
-    margin-bottom: 14px;
+    gap: 14px;
   }
 }
 
 /* Tablet */
 @media (min-width: 720px) {
   .gallery {
-    column-count: 3;
-    column-gap: 18px;
-  }
-  .gallery > .photo-card {
-    margin-bottom: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
   }
 }
 
 /* Desktop */
 @media (min-width: 1024px) {
   .gallery {
-    column-count: 3;
-    column-gap: 22px;
-  }
-  .gallery > .photo-card {
-    margin-bottom: 22px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
   }
 }
 
 /* Large desktop */
 @media (min-width: 1440px) {
   .gallery {
-    column-count: 4;
+    grid-template-columns: repeat(4, 1fr);
   }
 }

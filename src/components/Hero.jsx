@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { site } from "../data/site.js";
 import { toneGradient } from "../lib/gradient.js";
 import { resizeToBlob } from "../lib/resizeImage.js";
@@ -19,7 +19,34 @@ export default function Hero() {
   const hasImage = Boolean(photo.src);
 
   const inputRef = useRef(null);
+  const mediaRef = useRef(null);
+  const contentRef = useRef(null);
   const [busy, setBusy] = useState(false);
+
+  // Gentle scroll parallax: the photo drifts slower than the page and the intro
+  // text eases away as the gallery arrives. Disabled under reduced-motion.
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const y = window.scrollY || 0;
+        mediaRef.current?.style.setProperty("--parallax", `${Math.min(y * 0.35, 320)}px`);
+        if (contentRef.current) {
+          contentRef.current.style.opacity = String(Math.max(0, 1 - y / 480));
+          contentRef.current.style.transform = `translateY(${Math.min(y * 0.18, 120)}px)`;
+        }
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const changePhoto = async (fileList) => {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("image/"));
@@ -38,6 +65,7 @@ export default function Hero() {
   return (
     <header className="hero">
       <div
+        ref={mediaRef}
         className="hero__media"
         style={hasImage ? undefined : { background: toneGradient(["#c9b3e0", "#7c53b8"]) }}
       >
@@ -47,6 +75,8 @@ export default function Hero() {
             src={photo.src}
             alt={photo.alt || ""}
             decoding="async"
+            loading="eager"
+            fetchpriority="high"
             draggable="false"
           />
         ) : null}
@@ -87,7 +117,7 @@ export default function Hero() {
         </div>
       ) : null}
 
-      <div className="hero__content container">
+      <div className="hero__content container" ref={contentRef}>
         {(content.hero.eyebrow || editing) && (
           <p className="eyebrow hero__eyebrow hero__enter" style={{ "--d": "0.05s" }}>
             <EditableText

@@ -17,8 +17,18 @@ export const defaultContent = {
     signature: "— for you",
     photo: { src: "/images/photo-closing.jpg", alt: "One more to remember" },
   },
-  // No default songs — add your own in Edit mode (stored locally in your browser).
-  music: { cover: null, tracks: [] },
+  // Songs are baked into the site so they play on EVERY device (no sign-in).
+  //  1. Drop your .mp3 files into  public/music/
+  //  2. Add one entry per song below (kind MUST be "url").
+  // Example:
+  //   { id: "song-1", kind: "url", src: "/music/our-song.mp3", title: "Our Song", artist: "Artist" },
+  // `cover` is an optional static album image, e.g. { src: "/images/mem-hero.jpg" } (or null).
+  music: {
+    cover: null,
+    tracks: [
+      // { id: "song-1", kind: "url", src: "/music/FILENAME.mp3", title: "Song title", artist: "" },
+    ],
+  },
   groups: [
   {
     id: "g-first-trip",

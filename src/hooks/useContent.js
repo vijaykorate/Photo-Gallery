@@ -26,8 +26,11 @@ function readContent() {
     if (!parsed || !Array.isArray(parsed.groups) || !parsed.hero) return clone(defaultContent);
     // Forward-compat: make sure newer blocks/fields exist.
     if (!parsed.music) parsed.music = clone(defaultContent.music);
-    if (!Array.isArray(parsed.music.tracks)) parsed.music.tracks = clone(defaultContent.music.tracks);
-    if (!("cover" in parsed.music)) parsed.music.cover = null;
+    // Songs are baked into the site (static files) and the same on every device,
+    // so always use the shipped playlist + cover — this also clears any stale
+    // local ("file") tracks left in an existing owner's storage.
+    parsed.music.tracks = clone(defaultContent.music.tracks);
+    parsed.music.cover = clone(defaultContent.music.cover);
     if (!parsed.intro) parsed.intro = clone(defaultContent.intro);
     if (!("eyebrow" in parsed.hero)) parsed.hero.eyebrow = defaultContent.hero.eyebrow;
     return parsed;
@@ -76,9 +79,7 @@ export function useContent() {
     migrated.current = true;
     (async () => {
       const src0 = JSON.stringify(content);
-      const hasDataUrls = src0.includes("data:image");
-      const hasDummyTracks = (content.music?.tracks || []).some((t) => t.kind === "builtin");
-      if (!hasDataUrls && !hasDummyTracks) return; // nothing to clean up
+      if (!src0.includes("data:image")) return; // nothing to clean up
       const next = clone(content);
       const move = async (obj) => {
         if (obj && typeof obj.src === "string" && obj.src.startsWith("data:image")) {
@@ -95,14 +96,10 @@ export function useContent() {
       for (const g of next.groups) for (const ph of g.photos) await move(ph);
       if (next.hero?.photo) await move(next.hero.photo);
       if (next.closing?.photo) await move(next.closing.photo);
-      if (next.music?.cover) await move(next.music.cover);
-      // Drop the old placeholder (dummy) songs — the owner adds their own.
-      if (next.music?.tracks) next.music.tracks = next.music.tracks.filter((t) => t.kind !== "builtin");
       commit((c) => {
         c.groups = next.groups;
         c.hero = next.hero;
         c.closing = next.closing;
-        c.music = next.music;
       });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
